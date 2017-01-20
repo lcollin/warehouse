@@ -1,30 +1,33 @@
 package handlers
 
-import(
-	"fmt"
-
+import (
+	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
-	"github.com/pborman/uuid"
 
+	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/expresso-inventory/containers"
-	"github.com/lcollin/expresso-inventory/gateways"
 )
 
 type InventoryIfc interface {
 	New(ctx *gin.Context)
 	ViewAllInventory(ctx *gin.Context)
-	ViewByName(ctx *gin.Context)
+	GetByName(ctx *gin.Context)
 	// Update(ctx *gin.Context)
 	// Deactivate(ctx *gin.Context)
 	// Cancel(ctx *gin.Context)
 }
 
 type Inventory struct {
-	sql *gateways.Sql
+	*handlers.BaseHandler
+	/*Helper ....*/
 }
 
-func NewInventory(sql *gateways.Sql) InventoryIfc {
-	return &Inventory{sql: sql}
+func NewInventory(ctx *handlers.GatewayContext) InventoryIfc {
+	stats := ctx.Stats.Clone(statsd.Prefix("api.inventory"))
+	return &Inventory{
+		/*Helper: ..... */
+		BaseHandler: &handlers.BaseHandler{Stats: stats},
+	}
 }
 
 func (s *Inventory) New(ctx *gin.Context) {
@@ -53,12 +56,10 @@ func (s *Inventory) New(ctx *gin.Context) {
 	// 	ctx.JSON(500, &gin.H{"error": err, "message": err.Error()})
 	// 	return
 	// }
-	ctx.JSON(200, empty())
+	s.Success(ctx, nil)
 }
 
-
-
-//Get inventory of specific coffee 
+//Get inventory of specific coffee
 func (s *Inventory) GetByName(ctx *gin.Context) {
 	id := ctx.Param("name")
 	if id == "" {
@@ -84,34 +85,35 @@ func (s *Inventory) GetByName(ctx *gin.Context) {
 func (s *Inventory) ViewAllInventory(ctx *gin.Context) {
 	rows, err := s.sql.Select("SELECT * FROM inventory")
 	if err != nil {
+
 		ctx.JSON(500, errResponse(err.Error()))
 		return
 	}
-	subscription, err := containers.FromSql(rows)
+	inventories, err := containers.FromSql(rows)
 	if err != nil {
 		ctx.JSON(500, errResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(200, gin.H{"data": inventory})
+	s.Success(ctx, inventories)
 }
 
-func (s *Subscription) AddInventory(ctx *gin.Context) {
-	ctx.JSON(200, empty())
+func (s *Inventory) AddInventory(ctx *gin.Context) {
+	s.Success(ctx, nil)
 }
 
-func (s *Subscription) RemoveInventory(ctx *gin.Context) {
-	ctx.JSON(200, empty())
+func (s *Inventory) RemoveInventory(ctx *gin.Context) {
+	s.Success(ctx, nil)
 }
 
-func (s *Subscription) ViewImageURL(ctx *gin.Context) {
-	ctx.JSON(200, empty())
+func (s *Inventory) ViewImageURL(ctx *gin.Context) {
+	s.Success(ctx, nil)
 }
 
-func (s *Subscription) GetPrice(ctx *gin.Context) {
-	ctx.JSON(200, empty())
+func (s *Inventory) GetPrice(ctx *gin.Context) {
+	s.Success(ctx, nil)
 }
 
-func (s *Subscription) GetOzInBag(ctx *gin.Context) {
-	ctx.JSON(200, empty())
+func (s *Inventory) GetOzInBag(ctx *gin.Context) {
+	s.Success(ctx, nil)
 }

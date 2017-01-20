@@ -5,27 +5,41 @@ import (
 
 	"gopkg.in/gin-gonic/gin.v1"
 
+	"github.com/ghmeier/bloodlines/config"
+	"github.com/ghmeier/bloodlines/gateways"
+	h "github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/expresso-inventory/handlers"
-	"github.com/lcollin/expresso-inventory/gateways"
 )
 
 type Inventory struct {
-	router *gin.Engine
+	router       *gin.Engine
 	subscription handlers.SubscriptionIfc
 	// orders handlers.OrdersI
 }
 
-func New() (*Inventory, error) {
-	sql, err := gateways.NewSql()
-
+func New(config *config.Root) (*Inventory, error) {
+	sql, err := gateways.NewSQL(config.SQL)
 	if err != nil {
 		fmt.Println("ERROR: could not connect to mysql.")
 		fmt.Println(err.Error())
 		return nil, err
 	}
 
+	stats, err := statsd.New(
+		statsd.Address(config.Statsd.Host+":"+config.Statsd.Port),
+		statsd.Prefix(config.Statsd.Prefix),
+	)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	ctx := &h.GatewayContext{
+		Sql:   sql,
+		Stats: stats,
+	}
+
 	s := &Inventory{
-		inventory : handlers.NewInventory(sql),
+		inventory: handlers.NewInventory(ctx),
 	}
 
 	InitRouter(s)
@@ -36,7 +50,6 @@ func New() (*Inventory, error) {
 func InitRouter(s *Bloodlines) {
 	s.router = gin.Default()
 
-
 	inventory := s.router.Group("/api/inventory")
 	{
 		subscription.POST("", s.inventory.New)
@@ -46,7 +59,7 @@ func InitRouter(s *Bloodlines) {
 		subscription.POST("/:inventoryId/deactivate", s.inventory.Deactivate)
 		subscription.DELETE("/:inventoryId", s.inventory.Cancel)
 	}
-	
+
 }
 
 func (s *Inventory) Start(port string) {
