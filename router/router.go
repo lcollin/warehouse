@@ -7,7 +7,7 @@ import (
 
 	"github.com/ghmeier/bloodlines/config"
 	"github.com/ghmeier/bloodlines/gateways"
-	h "github.com/ghmeier/bloodlines/handlers"
+	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/expresso-inventory/handlers"
 )
 
