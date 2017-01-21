@@ -1,32 +1,32 @@
 package containers
 
-import(
+import (
 	"database/sql"
 
 	"github.com/pborman/uuid"
 )
 
-type Subscription struct {
-	Name string `json: "name"`
-	Picture string `json: "picture_url"`
-	Type string `json: "type"`
-	InStockBags int `json: "in_stock"`
-	ProviderPrice float64 `json: "provider_price"`
-	ConsumerPrice float64 `json: "consumer_price"`
-	OzInBag float64 `json: "oz_in_bag"`
-	Id uuid.UUID `json: "id"`
-	ShopId uuid.UUID `json: "shop_id"`
+type Inventory struct {
+	Name          string    `json: "name"`
+	Picture       string    `json: "picture_url"`
+	Type          string    `json: "type"`
+	InStockBags   int       `json: "in_stock"`
+	ProviderPrice float64   `json: "provider_price"`
+	ConsumerPrice float64   `json: "consumer_price"`
+	OzInBag       float64   `json: "oz_in_bag"`
+	Id            uuid.UUID `json: "id"`
+	ShopId        uuid.UUID `json: "shop_id"`
 
 	// These can be utilized in a later version if desired
-	LeadTime int `json: "lead_time"`
-	ReorderLevel int `json: "reorder_level"`
+	LeadTime      int `json: "lead_time"`
+	ReorderLevel  int `json: "reorder_level"`
 	PipelineStock int `json: "pipeline_stock"`
 }
 
 // type Inventory struct {
 // 	Id uuid.UUID `json: "id"`
 // 	OrderId int `json: "order_id"`
-// 	Type string `json:"type"` 
+// 	Type string `json:"type"`
 // 	UserId int `json: "user_id"`
 // 	Status string `json:"status"`
 // 	CreatedAt string `json:"created_at"` //change to time.Date
@@ -47,7 +47,7 @@ type Subscription struct {
 // }
 
 func FromSql(rows *sql.Rows) ([]*Inventory, error) {
-	inventory := make([]*Inventory,0)
+	inventory := make([]*Inventory, 0)
 
 	for rows.Next() {
 		s := &Inventory{}
