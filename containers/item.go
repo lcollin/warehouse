@@ -5,7 +5,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-type InventoryItemItem struct {
+type Item struct {
 	ID            uuid.UUID `json: "id"`
 	ShopId        uuid.UUID `json: "shop_id"`
 	Name          string    `json: "name"`
@@ -22,14 +22,14 @@ type InventoryItemItem struct {
 	PipelineStock int `json: "pipeline_stock"`
 }
 
-func InventoryItemItemFromSql(rows *sql.Rows) ([]*InventoryItem, error) {
-	inventoryItem := make([]*InventoryItem, 0)
+func ItemFromSql(rows *sql.Rows) ([]*Item, error) {
+	item := make([]*Item, 0)
 
 	for rows.Next() {
-		s := &InventoryItem{}
+		s := &Item{}
 		rows.Scan(&s.Id, &s.ShopId, &s.Name, &s.Picture, &s.Type, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag)
-		inventoryItem = append(inventoryItem, s)
+		item = append(item, s)
 	}
 
-	return inventoryItem, nil
+	return item, nil
 }

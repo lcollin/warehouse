@@ -10,7 +10,16 @@ type SubOrder struct {
 	OrderID				uuid.UUID `json: "order_id"`
 	UserID        uuid.UUID `json: "user_id"`
 	//corresponding to an item in inventory
-	ItemId 				uuid.UUID `json: "item_id"`
+	ItemID				uuid.UUID `json: "item_id"`
+}
+
+func NewSubOrder(orderID, userID, itemID string) *SubOrder {
+	return &SubOrder{
+		ID:             uuid.NewUUID(),
+		OrderID:				orderID,
+		UserID: 				userID,
+		ItemID:					itemID
+	}
 }
 
 func SubOrderFromSql(rows *sql.Rows) ([]*SubOrder, error) {

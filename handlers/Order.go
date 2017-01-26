@@ -18,14 +18,14 @@ type OrderIfc interface {
 
 type Order struct {
 	*handlers.BaseHandler
-	/*Helper ....*/
+	Helper helpers.OrderI
 }
 
 func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.order"))
 	return &Order{
-		/*Helper: ..... */
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
+		Helper:      helpers.NewOrder(ctx.Sql),
 	}
 }
 

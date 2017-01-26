@@ -10,6 +10,13 @@ type Order struct {
 	UserID        uuid.UUID `json: "user_id"`
 }
 
+func NewSubOrder(userID string) *Order {
+	return &Order{
+		ID:             uuid.NewUUID(),
+		UserID: 				userID,
+	}
+}
+
 func OrderFromSql(rows *sql.Rows) ([]*Order, error) {
 	order := make([]*Order, 0)
 
