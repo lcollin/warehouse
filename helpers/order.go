@@ -12,30 +12,30 @@ type baseHelper struct {
 	stats *statsd.Client
 }
 
-type InventoryI interface {
-	GetByID(string) (*containers.Inventory, error)
-	GetByShopID(string) (*containers.Inventory, error)
-	GetAll(int, int) ([]*containers.Inventory, error)
-	Insert(*containers.Inventory) error
-	Update(*containers.Inventory, string) error	
+type OrderI interface {
+	GetByID(string) (*containers.Order, error)
+	GetByShopID(string) (*containers.Order, error)
+	GetAll(int, int) ([]*containers.Order, error)
+	Insert(*containers.Order) error
+	Update(*containers.Order, string) error	
 	Delete(string) error
 }
 
-type Inventory struct {
+type Order struct {
 	*baseHelper
 }
 
-func NewInventory(sql gateways.SQL) *Inventory {
-	return &Inventory{baseHelper: &baseHelper{sql: sql}}
+func NewOrder(sql gateways.SQL) *Order {
+	return &Order{baseHelper: &baseHelper{sql: sql}}
 }
 
-func (i *Inventory) GetByID(id string) (*containers.Inventory, error) {
-	rows, err := i.sql.Select("SELECT * FROM inventory WHERE id=?", id)
+func (i *Order) GetByID(id string) (*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order WHERE id=?", id)
 	if err != nil {
 		return nil, err
 	}
 
-	items, err := containers.InventoryFromSQL(rows)
+	items, err := containers.OrderFromSQL(rows)
 	if err != nil {
 		return nil, err
 	}
@@ -43,27 +43,13 @@ func (i *Inventory) GetByID(id string) (*containers.Inventory, error) {
 	return items[0], err
 }
 
-func (i *Inventory) GetByShopID(shop_id string) (*containers.Inventory, error) {
-	rows, err := i.sql.Select("SELECT * FROM inventory WHERE shop_id=?", shop_id)
+func (i *Order) GetByShopID(shop_id string) (*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order WHERE shop_id=?", shop_id)
 	if err != nil {
 		return nil, err
 	}
 
-	items, err := containers.InventoryFromSQL(rows)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, err
-}
-
-func (i *Inventory) GetAll(offset int, limit int) ([]*containers.Inventory, error) {
-	rows, err := i.sql.Select("SELECT * FROM inventory ORDER BY id ASC LIMIT ?,?", offset, limit)
-	if err != nil {
-		return nil, err
-	}
-
-	items, err := containers.InventoryFromSQL(rows)
+	items, err := containers.OrderFromSQL(rows)
 	if err != nil {
 		return nil, err
 	}
@@ -71,41 +57,69 @@ func (i *Inventory) GetAll(offset int, limit int) ([]*containers.Inventory, erro
 	return items, err
 }
 
-func (i *Inventory) Insert(inventory *containers.Inventory) error {
+func (i *Order) GetByUserID(shop_id string) (*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order WHERE user_id=?", user_id)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := containers.OrderFromSQL(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, err
+}
+
+func (i *Order) GetAll(offset int, limit int) ([]*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order ORDER BY id ASC LIMIT ?,?", offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := containers.OrderFromSQL(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, err
+}
+
+func (i *Order) Insert(order *containers.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO inventory (id, shop_id, name, picture_url, type, in_stock, provider_price, consumer_price, oz_in_bag) VALUE (?,?,?,?,?,?,?,?,?)",
-		inventory.ID,
-		inventory.ShopId,
-		inventory.Name,
-		inventory.Picture,
-		inventory.Type,
-		inventory.InStockBags,
-		inventory.ProviderPrice,
-		inventory.ConsumerPrice,
-		inventory.OzInBag,     
+		"INSERT INTO order (id, shop_id, name, picture_url, type, in_stock, provider_price, consumer_price, oz_in_bag) VALUE (?,?,?,?,?,?,?,?,?)",
+		order.ID,
+		order.ShopId,
+		order.Name,
+		order.Picture,
+		order.Type,
+		order.InStockBags,
+		order.ProviderPrice,
+		order.ConsumerPrice,
+		order.OzInBag,     
 	)
 
 	return err
 }
 
-func (i *Inventory) Update(inventory *containers.Inventory, id string) error {
+func (i *Order) Update(order *containers.Order, id string) error {
 	err := i.sql.Modify(
-		"UPDATE inventory SET shop_id=?, name=?, picture_url=?, type=?, in_stock=?, provider_price=?, consumer_price=?, oz_in_bag=? WHERE id=?",
-		inventory.ShopId,
-		inventory.Name,
-		inventory.Picture,
-		inventory.Type,
-		inventory.InStockBags,
-		inventory.ProviderPrice,
-		inventory.ConsumerPrice,
-		inventory.OzInBag,  
+		"UPDATE order SET shop_id=?, name=?, picture_url=?, type=?, in_stock=?, provider_price=?, consumer_price=?, oz_in_bag=? WHERE id=?",
+		order.ShopId,
+		order.Name,
+		order.Picture,
+		order.Type,
+		order.InStockBags,
+		order.ProviderPrice,
+		order.ConsumerPrice,
+		order.OzInBag,  
 		id,
 	)
 
 	return err
 }
 
-func (i *Inventory) Delete(id string) error {
-	err := i.sql.Modify("DELETE FROM inventory WHERE id=?", id)
+func (i *Order) Delete(id string) error {
+	err := i.sql.Modify("DELETE FROM order WHERE id=?", id)
 	return err
 }
