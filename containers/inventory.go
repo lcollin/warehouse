@@ -7,6 +7,8 @@ import (
 )
 
 type Inventory struct {
+	ID            uuid.UUID `json: "id"`
+	ShopId        uuid.UUID `json: "shop_id"`
 	Name          string    `json: "name"`
 	Picture       string    `json: "picture_url"`
 	Type          string    `json: "type"`
@@ -14,8 +16,6 @@ type Inventory struct {
 	ProviderPrice float64   `json: "provider_price"`
 	ConsumerPrice float64   `json: "consumer_price"`
 	OzInBag       float64   `json: "oz_in_bag"`
-	Id            uuid.UUID `json: "id"`
-	ShopId        uuid.UUID `json: "shop_id"`
 
 	// These can be utilized in a later version if desired
 	LeadTime      int `json: "lead_time"`

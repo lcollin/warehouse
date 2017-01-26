@@ -22,11 +22,12 @@ type Inventory struct {
 	/*Helper ....*/
 }
 
+
 func NewInventory(ctx *handlers.GatewayContext) InventoryIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.inventory"))
 	return &Inventory{
-		/*Helper: ..... */
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
+		Helper:      helpers.NewInventory(ctx.Sql),
 	}
 }
 

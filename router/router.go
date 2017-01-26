@@ -13,7 +13,8 @@ import (
 
 type Inventory struct {
 	router       *gin.Engine
-	subscription handlers.SubscriptionIfc
+	subscription handlers.InventoryIfc
+	order 			 handlers.OrderIfc
 	// orders handlers.OrdersI
 }
 
@@ -52,12 +53,19 @@ func InitRouter(s *Bloodlines) {
 
 	inventory := s.router.Group("/api/inventory")
 	{
-		subscription.POST("", s.inventory.New)
+		//subscription.POST("", s.inventory.New)
+		subscription.GET("", s.inventory.ViewAllInventory)
 		subscription.GET("", s.inventory.ViewAllInventory)
 		subscription.GET("/:inventoryId", s.inventory.ViewByName)
 		subscription.POST("/:inventoryId", s.inventory.Update)
 		subscription.POST("/:inventoryId/deactivate", s.inventory.Deactivate)
 		subscription.DELETE("/:inventoryId", s.inventory.Cancel)
+
+		/**
+		receipt.GET("", b.receipt.ViewAll)
+		receipt.POST("/send", b.receipt.Send)
+		receipt.GET("/:receiptId", b.receipt.View)
+		*/
 	}
 
 }
