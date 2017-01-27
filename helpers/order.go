@@ -1,15 +1,12 @@
 package helpers
 
 import (
-	"gopkg.in/alexcesaro/statsd.v2"
-
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/lcollin/warehouse/containers"
 )
 
 type baseHelper struct {
-	sql   gateways.SQL
-	stats *statsd.Client
+	sql gateways.SQL
 }
 
 type OrderI interface {
@@ -17,7 +14,7 @@ type OrderI interface {
 	GetByShopID(string) (*containers.Order, error)
 	GetAll(int, int) ([]*containers.Order, error)
 	Insert(*containers.Order) error
-	Update(*containers.Order, string) error	
+	Update(*containers.Order, string) error
 	Delete(string) error
 }
 
@@ -43,8 +40,8 @@ func (i *Order) GetByID(id string) (*containers.Order, error) {
 	return items[0], err
 }
 
-func (i *Order) GetByShopID(shop_id string) (*containers.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE shop_id=?", shop_id)
+func (i *Order) GetByShopID(shopID string) (*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order WHERE shop_id=?", shopID)
 	if err != nil {
 		return nil, err
 	}
@@ -54,11 +51,11 @@ func (i *Order) GetByShopID(shop_id string) (*containers.Order, error) {
 		return nil, err
 	}
 
-	return items, err
+	return items[0], err
 }
 
-func (i *Order) GetByUserID(shop_id string) (*containers.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE user_id=?", user_id)
+func (i *Order) GetByUserID(userID string) (*containers.Order, error) {
+	rows, err := i.sql.Select("SELECT * FROM order WHERE user_id=?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +65,7 @@ func (i *Order) GetByUserID(shop_id string) (*containers.Order, error) {
 		return nil, err
 	}
 
-	return items, err
+	return items[0], err
 }
 
 func (i *Order) GetAll(offset int, limit int) ([]*containers.Order, error) {
@@ -89,14 +86,14 @@ func (i *Order) Insert(order *containers.Order) error {
 	err := i.sql.Modify(
 		"INSERT INTO order (id, shop_id, name, picture_url, type, in_stock, provider_price, consumer_price, oz_in_bag) VALUE (?,?,?,?,?,?,?,?,?)",
 		order.ID,
-		order.ShopId,
+		order.ShopID,
 		order.Name,
 		order.Picture,
 		order.Type,
 		order.InStockBags,
 		order.ProviderPrice,
 		order.ConsumerPrice,
-		order.OzInBag,     
+		order.OzInBag,
 	)
 
 	return err
@@ -105,14 +102,14 @@ func (i *Order) Insert(order *containers.Order) error {
 func (i *Order) Update(order *containers.Order, id string) error {
 	err := i.sql.Modify(
 		"UPDATE order SET shop_id=?, name=?, picture_url=?, type=?, in_stock=?, provider_price=?, consumer_price=?, oz_in_bag=? WHERE id=?",
-		order.ShopId,
+		order.ShopID,
 		order.Name,
 		order.Picture,
 		order.Type,
 		order.InStockBags,
 		order.ProviderPrice,
 		order.ConsumerPrice,
-		order.OzInBag,  
+		order.OzInBag,
 		id,
 	)
 

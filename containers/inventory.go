@@ -5,9 +5,9 @@ import (
 	"github.com/pborman/uuid"
 )
 
-type InventoryItemItem struct {
+type InventoryItem struct {
 	ID            uuid.UUID `json: "id"`
-	ShopId        uuid.UUID `json: "shop_id"`
+	ShopID        uuid.UUID `json: "shop_id"`
 	Name          string    `json: "name"`
 	Picture       string    `json: "picture_url"`
 	Type          string    `json: "type"`
@@ -22,12 +22,12 @@ type InventoryItemItem struct {
 	PipelineStock int `json: "pipeline_stock"`
 }
 
-func InventoryItemItemFromSql(rows *sql.Rows) ([]*InventoryItem, error) {
+func InventoryItemFromSql(rows *sql.Rows) ([]*InventoryItem, error) {
 	inventoryItem := make([]*InventoryItem, 0)
 
 	for rows.Next() {
 		s := &InventoryItem{}
-		rows.Scan(&s.Id, &s.ShopId, &s.Name, &s.Picture, &s.Type, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag)
+		rows.Scan(&s.ID, &s.ShopID, &s.Name, &s.Picture, &s.Type, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag)
 		inventoryItem = append(inventoryItem, s)
 	}
 

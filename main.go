@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ghmeier/bloodlines/config"
-	"github.com/lcollin/expresso-inventory/router"
+	"github.com/lcollin/warehouse/router"
 )
 
 func main() {

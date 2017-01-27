@@ -5,7 +5,8 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/expresso-order/containers"
+	"github.com/lcollin/warehouse/containers"
+	"github.com/lcollin/warehouse/helpers"
 )
 
 type OrderIfc interface {
@@ -83,8 +84,3 @@ func (s *Order) CreateOrder(ctx *gin.Context) {
 func (s *Order) ShipOrder(ctx *gin.Context) {
 	s.Success(ctx, nil)
 }
-
-
-
-
-

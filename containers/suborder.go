@@ -6,19 +6,19 @@ import (
 )
 
 type SubOrder struct {
-	ID            uuid.UUID `json: "id"`
-	OrderID				uuid.UUID `json: "order_id"`
-	UserID        uuid.UUID `json: "user_id"`
+	ID      uuid.UUID `json: "id"`
+	OrderID uuid.UUID `json: "order_id"`
+	UserID  uuid.UUID `json: "user_id"`
 	//corresponding to an item in inventory
-	ItemID				uuid.UUID `json: "item_id"`
+	ItemID uuid.UUID `json: "item_id"`
 }
 
-func NewSubOrder(orderID, userID, itemID string) *SubOrder {
+func NewSubOrder(orderID, userID, itemID uuid.UUID) *SubOrder {
 	return &SubOrder{
-		ID:             uuid.NewUUID(),
-		OrderID:				orderID,
-		UserID: 				userID,
-		ItemID:					itemID
+		ID:      uuid.NewUUID(),
+		OrderID: orderID,
+		UserID:  userID,
+		ItemID:  itemID,
 	}
 }
 
@@ -28,7 +28,7 @@ func SubOrderFromSql(rows *sql.Rows) ([]*SubOrder, error) {
 	for rows.Next() {
 		s := &SubOrder{}
 		rows.Scan(&s.ID, &s.OrderID, &s.UserID, &s.ItemID)
-		suborder = append(order, s)
+		suborder = append(suborder, s)
 	}
 
 	return suborder, nil

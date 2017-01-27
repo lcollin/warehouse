@@ -7,14 +7,14 @@ import (
 
 	"github.com/ghmeier/bloodlines/config"
 	"github.com/ghmeier/bloodlines/gateways"
-	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/expresso-inventory/handlers"
+	h "github.com/ghmeier/bloodlines/handlers"
+	"github.com/lcollin/warehouse/handlers"
 )
 
 type Inventory struct {
 	router       *gin.Engine
 	subscription handlers.InventoryIfc
-	order 			 handlers.OrderIfc
+	order        handlers.OrderIfc
 	// orders handlers.OrdersI
 }
 

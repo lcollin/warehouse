@@ -1,22 +1,16 @@
 package helpers
 
 import (
-	"gopkg.in/alexcesaro/statsd.v2"
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/lcollin/warehouse/containers"
 )
-
-type baseHelper struct {
-	sql   gateways.SQL
-	stats *statsd.Client
-}
 
 type ItemI interface {
 	GetByID(string) (*containers.Item, error)
 	GetByShopID(string) (*containers.Item, error)
 	GetAll(int, int) ([]*containers.Item, error)
 	Insert(*containers.Item) error
-	Update(*containers.Item, string) error	
+	Update(*containers.Item, string) error
 	Delete(string) error
 }
 
@@ -42,8 +36,8 @@ func (i *Item) GetByID(id string) (*containers.Item, error) {
 	return items[0], err
 }
 
-func (i *Item) GetByShopID(shop_id string) (*containers.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE shop_id=?", shop_id)
+func (i *Item) GetByShopID(shopID string) (*containers.Item, error) {
+	rows, err := i.sql.Select("SELECT * FROM item WHERE shop_id=?", shopID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +47,7 @@ func (i *Item) GetByShopID(shop_id string) (*containers.Item, error) {
 		return nil, err
 	}
 
-	return items, err
+	return items[0], err
 }
 
 func (i *Item) GetAll(offset int, limit int) ([]*containers.Item, error) {
@@ -74,14 +68,14 @@ func (i *Item) Insert(item *containers.Item) error {
 	err := i.sql.Modify(
 		"INSERT INTO item (id, shop_id, name, picture_url, type, in_stock, provider_price, consumer_price, oz_in_bag) VALUE (?,?,?,?,?,?,?,?,?)",
 		item.ID,
-		item.ShopId,
+		item.ShopID,
 		item.Name,
 		item.Picture,
 		item.Type,
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
-		item.OzInBag,     
+		item.OzInBag,
 	)
 
 	return err
@@ -90,14 +84,14 @@ func (i *Item) Insert(item *containers.Item) error {
 func (i *Item) Update(item *containers.Item, id string) error {
 	err := i.sql.Modify(
 		"UPDATE item SET shop_id=?, name=?, picture_url=?, type=?, in_stock=?, provider_price=?, consumer_price=?, oz_in_bag=? WHERE id=?",
-		item.ShopId,
+		item.ShopID,
 		item.Name,
 		item.Picture,
 		item.Type,
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
-		item.OzInBag,  
+		item.OzInBag,
 		id,
 	)
 
