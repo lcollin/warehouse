@@ -3,16 +3,17 @@ package handlers
 import (
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/containers"
+	"github.com/lcollin/warehouse/helpers"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
 type Item interface {
 	New(ctx *gin.Context)
-	GetById(ctx *gin.Context)
-	ViewAllItems(ctx *gin.Context)
-	CreateOrder(ctx *gin.Context)
-	ShipOrder(ctx *gin.Context)
+	ViewAll(ctx *gin.Context)
+	View(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type Item struct {
@@ -28,65 +29,76 @@ func NewItem(ctx *handlers.GatewayContext) ItemIfc {
 	}
 }
 
-func (s *Item) New(ctx *gin.Context) {
-	s.Success(ctx, nil)
-}
-
-//Get inventory of specific coffee
-func (s *Item) GetByName(ctx *gin.Context) {
-	id := ctx.Param("name")
-	if id == "" {
-		ctx.JSON(500, errResponse("name is a required parameter"))
-		return
-	}
-
-	rows, err := s.sql.Select("SELECT * FROM item WHERE name=?")
+func (i *Item) New(ctx *gin.Context) {
+	var json models.Item
+	err := ctx.BindJSON(&json)
 	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
+		i.ItemError(ctx, "Error: Unable to parse json", err)
 		return
 	}
-	inventory, err := containers.FromSql(rows)
+
+	item := models.NewItem(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
+		                   json.ProviderPrice, json.ConsumerPrice, json.OzInBag)
+	err = i.Helper.Insert(item)
 	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
+		i.ServerError(ctx, err, json)
 		return
 	}
 
-	ctx.JSON(200, gin.H{"data": inventory})
+	i.Success(ctx, item)
 }
 
-//Get entire inventory
-func (s *Item) ViewAllItem(ctx *gin.Context) {
-	rows, err := s.sql.Select("SELECT * FROM inventory")
+func (i *Item) ViewAll(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
+
+	items, err := i.Helper.GetAll(offset, limit)
 	if err != nil {
-
-		ctx.JSON(500, errResponse(err.Error()))
+		i.ServerError(ctx, err, items)
 		return
 	}
-	inventories, err := containers.FromSql(rows)
+
+	i.Success(ctx, items)
+}
+
+func (i *Item) View(ctx *gin.Context) {
+	itemId := ctx.Param("itemId")
+	
+	item, err := i.Helper.GetByID(itemId)
 	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
+		i.ServerError(ctx, err, itemId)
 		return
 	}
 
-	s.Success(ctx, inventories)
+	i.Success(ctx, item)
 }
 
-func (s *Item) AddItem(ctx *gin.Context) {
-	s.Success(ctx, nil)
+func (i *Item) Update(ctx *gin.Context) {
+	itemId := ctx.Param("itemId")
+
+	var json models.Item
+	err := ctx.BindJSON(&json)
+	if err != nil {
+		i.UserError(ctx, "Error: Unable to parse json", err)
+		return
+	}
+
+	err = i.Helper.Update(&json, itemId)
+	if err != nil {
+		i.ServerError(ctx, err, itemId)
+		return
+	}
+
+	i.Success(ctx, json)
 }
 
-func (s *Item) RemoveItem(ctx *gin.Context) {
-	s.Success(ctx, nil)
-}
+func (i *Item) Delete(ctx *gin.Context) {
+	itemId := ctx.Param("itemId")
 
-func (s *Item) ViewImageURL(ctx *gin.Context) {
-	s.Success(ctx, nil)
-}
+	err := i.Helper.Delete(itemId)
+	if err != nil {
+		i.ServerError(ctx, err, itemId)
+		return
+	}
 
-func (s *Item) GetPrice(ctx *gin.Context) {
-	s.Success(ctx, nil)
-}
-
-func (s *Item) GetOzInBag(ctx *gin.Context) {
-	s.Success(ctx, nil)
+	i.Success(ctx, nil)
 }
