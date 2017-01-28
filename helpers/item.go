@@ -9,6 +9,7 @@ type ItemI interface {
 	GetByID(string) (*containers.Item, error)
 	GetByShopID(string) (*containers.Item, error)
 	GetAll(int, int) ([]*containers.Item, error)
+	GetAllInStock(int, int) ([]*containers.Item, error)
 	Insert(*containers.Item) error
 	Update(*containers.Item, string) error
 	Delete(string) error
@@ -52,6 +53,20 @@ func (i *Item) GetByShopID(shopID string) (*containers.Item, error) {
 
 func (i *Item) GetAll(offset int, limit int) ([]*containers.Item, error) {
 	rows, err := i.sql.Select("SELECT * FROM item ORDER BY id ASC LIMIT ?,?", offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := containers.ItemFromSQL(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, err
+}
+
+func (i *Item) GetAllInStock(offset int, limit int) ([]*containers.Item, error) {
+	rows, err := i.sql.Select("SELECT * FROM item WHERE in_stock>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}

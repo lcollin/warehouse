@@ -11,7 +11,7 @@ type baseHelper struct {
 
 type OrderI interface {
 	GetByID(string) (*containers.Order, error)
-	GetByShopID(string) (*containers.Order, error)
+	GetByUserID(string) (*containers.Order, error)
 	GetAll(int, int) ([]*containers.Order, error)
 	Insert(*containers.Order) error
 	Update(*containers.Order, string) error
@@ -28,20 +28,6 @@ func NewOrder(sql gateways.SQL) *Order {
 
 func (i *Order) GetByID(id string) (*containers.Order, error) {
 	rows, err := i.sql.Select("SELECT * FROM order WHERE id=?", id)
-	if err != nil {
-		return nil, err
-	}
-
-	items, err := containers.OrderFromSQL(rows)
-	if err != nil {
-		return nil, err
-	}
-
-	return items[0], err
-}
-
-func (i *Order) GetByShopID(shopID string) (*containers.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE shop_id=?", shopID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,16 +70,9 @@ func (i *Order) GetAll(offset int, limit int) ([]*containers.Order, error) {
 
 func (i *Order) Insert(order *containers.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO order (id, shop_id, name, picture_url, type, in_stock, provider_price, consumer_price, oz_in_bag) VALUE (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO order (id, user_id) VALUE (?,?)",
 		order.ID,
-		order.ShopID,
-		order.Name,
-		order.Picture,
-		order.Type,
-		order.InStockBags,
-		order.ProviderPrice,
-		order.ConsumerPrice,
-		order.OzInBag,
+		order.UserID,
 	)
 
 	return err
@@ -101,15 +80,8 @@ func (i *Order) Insert(order *containers.Order) error {
 
 func (i *Order) Update(order *containers.Order, id string) error {
 	err := i.sql.Modify(
-		"UPDATE order SET shop_id=?, name=?, picture_url=?, type=?, in_stock=?, provider_price=?, consumer_price=?, oz_in_bag=? WHERE id=?",
-		order.ShopID,
-		order.Name,
-		order.Picture,
-		order.Type,
-		order.InStockBags,
-		order.ProviderPrice,
-		order.ConsumerPrice,
-		order.OzInBag,
+		"UPDATE order SET user_id=? WHERE id=?",
+		order.UserID,
 		id,
 	)
 
