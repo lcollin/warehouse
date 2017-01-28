@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"github.com/ghmeier/bloodlines/handlers"
+	"github.com/lcollin/warehouse/containers"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
-	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/expresso-inventory/containers"
 )
 
 type Item interface {
@@ -20,9 +20,8 @@ type Item struct {
 	Helper helpers.ItemI
 }
 
-
 func NewItem(ctx *handlers.GatewayContext) ItemIfc {
-	stats := ctx.Stats.Clone(statsd.Prefix("api.inventory"))
+	stats := ctx.Stats.Clone(statsd.Prefix("api.item"))
 	return &Item{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
 		Helper:      helpers.NewItem(ctx.Sql),

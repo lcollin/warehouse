@@ -6,18 +6,18 @@ import (
 )
 
 type Order struct {
-	ID 	          uuid.UUID `json: "id"`
-	UserID        uuid.UUID `json: "user_id"`
+	ID     uuid.UUID `json: "id"`
+	UserID uuid.UUID `json: "user_id"`
 }
 
-func NewSubOrder(userID string) *Order {
+func NewOrder(userID uuid.UUID) *Order {
 	return &Order{
-		ID:             uuid.NewUUID(),
-		UserID: 				userID,
+		ID:     uuid.NewUUID(),
+		UserID: userID,
 	}
 }
 
-func OrderFromSql(rows *sql.Rows) ([]*Order, error) {
+func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	order := make([]*Order, 0)
 
 	for rows.Next() {
