@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 
+	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/config"
@@ -12,9 +13,10 @@ import (
 )
 
 type Inventory struct {
-	router       *gin.Engine
-	subscription handlers.InventoryIfc
-	order        handlers.OrderIfc
+	router   *gin.Engine
+	item     handlers.ItemIfc
+	order    handlers.OrderIfc
+	suborder handlers.SubOrderIfc
 	// orders handlers.OrdersI
 }
 
@@ -40,7 +42,9 @@ func New(config *config.Root) (*Inventory, error) {
 	}
 
 	s := &Inventory{
-		inventory: handlers.NewInventory(ctx),
+		item:     handlers.NewItem(ctx),
+		order:    handlers.NewOrder(ctx),
+		suborder: handlers.NewSubOrder(ctx),
 	}
 
 	InitRouter(s)
@@ -48,18 +52,16 @@ func New(config *config.Root) (*Inventory, error) {
 }
 
 /*InitRouter connects the handlers to endpoints with gin*/
-func InitRouter(s *Bloodlines) {
+func InitRouter(s *Inventory) {
 	s.router = gin.Default()
 
-	inventory := s.router.Group("/api/inventory")
+	item := s.router.Group("/api/item")
 	{
 		//subscription.POST("", s.inventory.New)
-		subscription.GET("", s.inventory.ViewAllInventory)
-		subscription.GET("", s.inventory.ViewAllInventory)
-		subscription.GET("/:inventoryId", s.inventory.ViewByName)
-		subscription.POST("/:inventoryId", s.inventory.Update)
-		subscription.POST("/:inventoryId/deactivate", s.inventory.Deactivate)
-		subscription.DELETE("/:inventoryId", s.inventory.Cancel)
+		item.GET("", s.item.ViewAll)
+		item.GET("/:itemId", s.item.View)
+		item.PUT("/:itemId", s.item.Update)
+		item.DELETE("/:itemId", s.item.Delete)
 
 		/**
 		receipt.GET("", b.receipt.ViewAll)

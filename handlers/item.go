@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/warehouse/containers"
 	"github.com/lcollin/warehouse/helpers"
+	"github.com/lcollin/warehouse/models"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
-type Item interface {
+type ItemIfc interface {
 	New(ctx *gin.Context)
 	ViewAll(ctx *gin.Context)
 	View(ctx *gin.Context)
@@ -33,12 +33,12 @@ func (i *Item) New(ctx *gin.Context) {
 	var json models.Item
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		i.ItemError(ctx, "Error: Unable to parse json", err)
+		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
 	item := models.NewItem(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
-		                   json.ProviderPrice, json.ConsumerPrice, json.OzInBag)
+		json.ProviderPrice, json.ConsumerPrice, json.OZInBag)
 	err = i.Helper.Insert(item)
 	if err != nil {
 		i.ServerError(ctx, err, json)
@@ -62,7 +62,7 @@ func (i *Item) ViewAll(ctx *gin.Context) {
 
 func (i *Item) View(ctx *gin.Context) {
 	itemId := ctx.Param("itemId")
-	
+
 	item, err := i.Helper.GetByID(itemId)
 	if err != nil {
 		i.ServerError(ctx, err, itemId)

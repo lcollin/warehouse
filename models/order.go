@@ -1,4 +1,4 @@
-package containers
+package models
 
 import (
 	"database/sql"

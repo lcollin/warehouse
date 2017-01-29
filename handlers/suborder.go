@@ -5,11 +5,11 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/warehouse/containers"
 	"github.com/lcollin/warehouse/helpers"
+	"github.com/lcollin/warehouse/models"
 )
 
-type SubSubOrderIfc interface {
+type SubOrderIfc interface {
 	New(ctx *gin.Context)
 	GetBySubOrderId(ctx *gin.Context)
 	ViewAllSubOrders(ctx *gin.Context)
@@ -34,7 +34,7 @@ func (s *SubOrder) New(ctx *gin.Context) {
 	var json models.SubOrder
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		s.SubOrderError(ctx, "Error: Unable to parse json", err)
+		s.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
@@ -45,42 +45,29 @@ func (s *SubOrder) New(ctx *gin.Context) {
 		return
 	}
 
-	s.Success(ctx, item)
+	s.Success(ctx, suborder)
 }
 
 //Get suborder of specific coffee
 func (s *SubOrder) GetBySubOrderId(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == "" {
-		ctx.JSON(500, errResponse("id is a required parameter"))
+
+	suborder, err := s.Helper.GetByID(id)
+	if err != nil {
+		s.ServerError(ctx, err, id)
 		return
 	}
 
-	rows, err := s.sql.Select("SELECT * FROM suborder WHERE id=?")
-	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-	suborder, err := containers.FromSql(rows)
-	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-
-	ctx.JSON(200, gin.H{"data": suborder})
+	s.Success(ctx, suborder)
 }
 
 //Get entire suborder
 func (s *SubOrder) ViewAllSubOrders(ctx *gin.Context) {
-	rows, err := s.sql.Select("SELECT * FROM suborder")
-	if err != nil {
+	offset, limit := s.GetPaging(ctx)
 
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-	suborders, err := containers.FromSql(rows)
+	suborders, err := s.Helper.GetAll(offset, limit)
 	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
+		s.ServerError(ctx, err, nil)
 		return
 	}
 

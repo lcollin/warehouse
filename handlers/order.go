@@ -5,8 +5,8 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/lcollin/warehouse/containers"
 	"github.com/lcollin/warehouse/helpers"
+	"github.com/lcollin/warehouse/models"
 )
 
 type OrderIfc interface {
@@ -34,7 +34,7 @@ func (o *Order) New(ctx *gin.Context) {
 	var json models.Order
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		o.OrderError(ctx, "Error: Unable to parse json", err)
+		o.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
@@ -45,42 +45,29 @@ func (o *Order) New(ctx *gin.Context) {
 		return
 	}
 
-	o.Success(ctx, item)
+	o.Success(ctx, order)
 }
 
 //Get order of specific coffee
 func (s *Order) GetByOrderID(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if id == "" {
-		ctx.JSON(500, errResponse("id is a required parameter"))
+
+	order, err := s.Helper.GetByID(id)
+	if err != nil {
+		s.ServerError(ctx, err, id)
 		return
 	}
 
-	rows, err := s.sql.Select("SELECT * FROM order WHERE id=?")
-	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-	order, err := containers.FromSql(rows)
-	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-
-	ctx.JSON(200, gin.H{"data": order})
+	s.Success(ctx, order)
 }
 
 //Get entire order
 func (s *Order) ViewAllOrders(ctx *gin.Context) {
-	rows, err := s.sql.Select("SELECT * FROM order")
-	if err != nil {
+	offset, limit := s.GetPaging(ctx)
 
-		ctx.JSON(500, errResponse(err.Error()))
-		return
-	}
-	orders, err := containers.FromSql(rows)
+	orders, err := s.Helper.GetAll(offset, limit)
 	if err != nil {
-		ctx.JSON(500, errResponse(err.Error()))
+		s.ServerError(ctx, err, nil)
 		return
 	}
 
