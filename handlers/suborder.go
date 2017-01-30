@@ -30,58 +30,76 @@ func NewSubOrder(ctx *handlers.GatewayContext) SubOrderIfc {
 	}
 }
 
-func (s *SubOrder) New(ctx *gin.Context) {
+func (i *SubOrder) New(ctx *gin.Context) {
 	var json models.SubOrder
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		s.UserError(ctx, "Error: Unable to parse json", err)
+		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
-	suborder := models.NewSubOrder(json.OrderID, json.ItemID)
-	err = s.Helper.Insert(suborder)
+	suborder := models.NewSubOrder(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
+		json.ProviderPrice, json.ConsumerPrice, json.OZInBag)
+	err = i.Helper.Insert(suborder)
 	if err != nil {
-		s.ServerError(ctx, err, json)
+		i.ServerError(ctx, err, json)
 		return
 	}
 
-	s.Success(ctx, suborder)
+	i.Success(ctx, suborder)
 }
 
-//Get suborder of specific coffee
-func (s *SubOrder) GetBySubOrderId(ctx *gin.Context) {
-	id := ctx.Param("id")
+func (i *SubOrder) ViewAll(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
 
-	suborder, err := s.Helper.GetByID(id)
+	suborders, err := i.Helper.GetAll(offset, limit)
 	if err != nil {
-		s.ServerError(ctx, err, id)
+		i.ServerError(ctx, err, suborders)
 		return
 	}
 
-	s.Success(ctx, suborder)
+	i.Success(ctx, suborders)
 }
 
-//Get entire suborder
-func (s *SubOrder) ViewAllSubOrders(ctx *gin.Context) {
-	offset, limit := s.GetPaging(ctx)
+func (i *SubOrder) View(ctx *gin.Context) {
+	suborderId := ctx.Param("suborderId")
 
-	suborders, err := s.Helper.GetAll(offset, limit)
+	suborder, err := i.Helper.GetByID(suborderId)
 	if err != nil {
-		s.ServerError(ctx, err, nil)
+		i.ServerError(ctx, err, suborderId)
 		return
 	}
 
-	s.Success(ctx, suborders)
+	i.Success(ctx, suborder)
 }
 
-// Subscriptions will create suborders automatically
-// Params to include: item id, store id, etc
-func (s *SubOrder) CreateSubOrder(ctx *gin.Context) {
-	s.Success(ctx, nil)
+func (i *SubOrder) Update(ctx *gin.Context) {
+	suborderId := ctx.Param("suborderId")
+
+	var json models.SubOrder
+	err := ctx.BindJSON(&json)
+	if err != nil {
+		i.UserError(ctx, "Error: Unable to parse json", err)
+		return
+	}
+
+	err = i.Helper.Update(&json, suborderId)
+	if err != nil {
+		i.ServerError(ctx, err, suborderId)
+		return
+	}
+
+	i.Success(ctx, json)
 }
 
-// Provider will notify that an suborder has been shipped
-// Params to include: shipping tracking number
-func (s *SubOrder) ShipSubOrder(ctx *gin.Context) {
-	s.Success(ctx, nil)
+func (i *SubOrder) Delete(ctx *gin.Context) {
+	suborderId := ctx.Param("suborderId")
+
+	err := i.Helper.Delete(suborderId)
+	if err != nil {
+		i.ServerError(ctx, err, suborderId)
+		return
+	}
+
+	i.Success(ctx, nil)
 }

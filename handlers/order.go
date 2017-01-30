@@ -3,7 +3,6 @@ package handlers
 import (
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
-
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
@@ -11,10 +10,10 @@ import (
 
 type OrderIfc interface {
 	New(ctx *gin.Context)
-	GetByOrderID(ctx *gin.Context)
-	ViewAllOrders(ctx *gin.Context)
-	CreateOrder(ctx *gin.Context)
-	ShipOrder(ctx *gin.Context)
+	ViewAll(ctx *gin.Context)
+	View(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type Order struct {
@@ -34,54 +33,72 @@ func (o *Order) New(ctx *gin.Context) {
 	var json models.Order
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		o.UserError(ctx, "Error: Unable to parse json", err)
+		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
 	order := models.NewOrder(json.UserID)
-	err = o.Helper.Insert(order)
+	err = i.Helper.Insert(order)
 	if err != nil {
-		o.ServerError(ctx, err, json)
+		i.ServerError(ctx, err, json)
 		return
 	}
 
-	o.Success(ctx, order)
+	i.Success(ctx, order)
 }
 
-//Get order of specific coffee
-func (s *Order) GetByOrderID(ctx *gin.Context) {
-	id := ctx.Param("id")
+func (i *Order) ViewAll(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
 
-	order, err := s.Helper.GetByID(id)
+	orders, err := i.Helper.GetAll(offset, limit)
 	if err != nil {
-		s.ServerError(ctx, err, id)
+		i.ServerError(ctx, err, orders)
 		return
 	}
 
-	s.Success(ctx, order)
+	i.Success(ctx, orders)
 }
 
-//Get entire order
-func (s *Order) ViewAllOrders(ctx *gin.Context) {
-	offset, limit := s.GetPaging(ctx)
+func (i *Order) View(ctx *gin.Context) {
+	orderId := ctx.Param("orderId")
 
-	orders, err := s.Helper.GetAll(offset, limit)
+	order, err := i.Helper.GetByID(orderId)
 	if err != nil {
-		s.ServerError(ctx, err, nil)
+		i.ServerError(ctx, err, orderId)
 		return
 	}
 
-	s.Success(ctx, orders)
+	i.Success(ctx, order)
 }
 
-// Subscriptions will create orders automatically
-// Params to include: item id, store id, etc
-func (s *Order) CreateOrder(ctx *gin.Context) {
-	s.Success(ctx, nil)
+func (i *Order) Update(ctx *gin.Context) {
+	orderId := ctx.Param("orderId")
+
+	var json models.Order
+	err := ctx.BindJSON(&json)
+	if err != nil {
+		i.UserError(ctx, "Error: Unable to parse json", err)
+		return
+	}
+
+	err = i.Helper.Update(&json, orderId)
+	if err != nil {
+		i.ServerError(ctx, err, orderId)
+		return
+	}
+
+	i.Success(ctx, json)
 }
 
-// Provider will notify that an order has been shipped
-// Params to include: shipping tracking number
-func (s *Order) ShipOrder(ctx *gin.Context) {
-	s.Success(ctx, nil)
+func (i *Order) Delete(ctx *gin.Context) {
+	orderId := ctx.Param("orderId")
+
+	err := i.Helper.Delete(orderId)
+	if err != nil {
+		i.ServerError(ctx, err, orderId)
+		return
+	}
+
+	i.Success(ctx, nil)
 }
+
