@@ -1,4 +1,4 @@
-package containers
+package models
 
 import (
 	"database/sql"
@@ -6,9 +6,9 @@ import (
 )
 
 type SubOrder struct {
-	ID uuid.UUID `json: "id"`
+	ID      uuid.UUID `json: "id"`
 	OrderID uuid.UUID `json: "order_id"`
-	ItemID uuid.UUID `json: "item_id"`
+	ItemID  uuid.UUID `json: "item_id"`
 }
 
 func NewSubOrder(orderID, itemID uuid.UUID) *SubOrder {
