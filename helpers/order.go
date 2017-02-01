@@ -41,7 +41,7 @@ func (i *Order) GetByID(id string) (*models.Order, error) {
 }
 
 func (i *Order) GetByUserID(userID string) (*models.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE user_id=?", userID)
+	rows, err := i.sql.Select("SELECT * FROM order WHERE userID=?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +70,12 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO order (id, user_id) VALUE (?,?)",
+		"INSERT INTO order (id, userID, subscriptionID, requestDate, shipDate) VALUE (?,?,?,?,?)",
 		order.ID,
 		order.UserID,
+		order.SubscriptionID,
+		order.RequestDate,
+		order.ShipDate,
 	)
 
 	return err
@@ -80,8 +83,11 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order, id string) error {
 	err := i.sql.Modify(
-		"UPDATE order SET user_id=? WHERE id=?",
+		"UPDATE order SET userID=?, subscriptionID=?, requestDate=?, shipDate=? WHERE id=?",
 		order.UserID,
+		order.SubscriptionID,
+		order.RequestDate,
+		order.ShipDate,
 		id,
 	)
 

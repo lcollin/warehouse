@@ -7,10 +7,10 @@ import (
 
 type Item struct {
 	ID            uuid.UUID `json: "id"`
-	ShopID        uuid.UUID `json: "shopId"`
+	ShopID        uuid.UUID `json: "shopID"`
 	Name          string    `json: "name"`
 	Picture       string    `json: "pictureUrl"`
-	Type          string    `json: "type"`
+	Type          string    `json: "coffeeType"`
 	InStockBags   int       `json: "inStock"`
 	ProviderPrice float64   `json: "providerPrice"`
 	ConsumerPrice float64   `json: "consumerPrice"`
@@ -22,7 +22,7 @@ type Item struct {
 	// PipelineStock int `json: "pipeline_stock"`
 }
 
-func NewItem(shopID uuid.UUID, name, pictureURL, coffeeType string, inStock int, providerPrice, consumerPrice, ozInBag float64) *Item {
+func NewItem(shopID, name, pictureURL, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) *Item {
 	return &Item{
 		ID:            uuid.NewUUID(),
 		ShopID:        shopID,
@@ -41,7 +41,7 @@ func ItemFromSQL(rows *sql.Rows) ([]*Item, error) {
 
 	for rows.Next() {
 		s := &Item{}
-		rows.Scan(&s.ID, &s.ShopID, &s.Name, &s.Picture, &s.Type, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OZInBag)
+		rows.Scan(&s.ID, &s.ShopID, &s.Name, &s.Picture, &s.Type, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag)
 		item = append(item, s)
 	}
 

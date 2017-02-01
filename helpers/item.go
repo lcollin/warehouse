@@ -81,7 +81,7 @@ func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
 
 func (i *Item) Insert(item *models.Item) error {
 	err := i.sql.Modify(
-		"INSERT INTO item (id, shopId, name, pictureUrl, type, inStock, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO item (id, shopID, name, pictureUrl, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
 		item.ID,
 		item.ShopID,
 		item.Name,
@@ -90,7 +90,7 @@ func (i *Item) Insert(item *models.Item) error {
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
-		item.OZInBag,
+		item.OzInBag,
 	)
 
 	return err
@@ -98,7 +98,7 @@ func (i *Item) Insert(item *models.Item) error {
 
 func (i *Item) Update(item *models.Item, id string) error {
 	err := i.sql.Modify(
-		"UPDATE item SET shopId=?, name=?, pictureUrl=?, type=?, inStock=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
+		"UPDATE item SET shopId=?, name=?, pictureUrl=?, coffeeType=?, inStock=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
 		item.ShopID,
 		item.Name,
 		item.Picture,

@@ -8,7 +8,7 @@ import (
 
 	"github.com/ghmeier/bloodlines/config"
 	"github.com/ghmeier/bloodlines/gateways"
-	h "github.com/ghmeier/bloodlines/handlers"
+	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/handlers"
 )
 
@@ -17,7 +17,6 @@ type Inventory struct {
 	item     handlers.ItemIfc
 	order    handlers.OrderIfc
 	suborder handlers.SubOrderIfc
-	// orders handlers.OrdersI
 }
 
 func New(config *config.Root) (*Inventory, error) {
@@ -55,19 +54,31 @@ func New(config *config.Root) (*Inventory, error) {
 func InitRouter(s *Inventory) {
 	s.router = gin.Default()
 
-	item := s.router.Group("/api/item")
+	item := tc.router.Group("/api/item")
 	{
-		//subscription.POST("", s.inventory.New)
-		item.GET("", s.item.ViewAll)
-		item.GET("/:itemId", s.item.View)
-		item.PUT("/:itemId", s.item.Update)
-		item.DELETE("/:itemId", s.item.Delete)
+		item.POST("", tc.item.New)
+		item.GET("", tc.item.ViewAll)
+		item.GET("/:itemId", tc.item.View)
+		item.PUT("/:itemId", tc.item.Update)
+		item.DELETE("/:itemId", tc.item.Delete)
+	}
 
-		/**
-		receipt.GET("", b.receipt.ViewAll)
-		receipt.POST("/send", b.receipt.Send)
-		receipt.GET("/:receiptId", b.receipt.View)
-		*/
+	order := tc.router.Group("/api/order")
+	{
+		order.POST("", tc.order.New)
+		order.GET("", tc.order.ViewAll)
+		order.GET("/:orderId", tc.order.View)
+		order.PUT("/:orderId", tc.order.Update)
+		order.DELETE("/:orderId", tc.order.Delete)
+	}
+
+	suborder := tc.router.Group("/api/suborder")
+	{
+		suborder.POST("", tc.suborder.New)
+		suborder.GET("", tc.suborder.ViewAll)
+		suborder.GET("/:suborderId", tc.suborder.View)
+		suborder.PUT("/:suborderId", tc.suborder.Update)
+		suborder.DELETE("/:suborderId", tc.suborder.Delete)
 	}
 
 }

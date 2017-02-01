@@ -37,7 +37,7 @@ func (o *Order) New(ctx *gin.Context) {
 		return
 	}
 
-	order := models.NewOrder(json.UserID)
+	order := models.NewOrder(json.UserID, json.SubscriptionID, json.RequestDate, json.ShipDate)
 	err = i.Helper.Insert(order)
 	if err != nil {
 		i.ServerError(ctx, err, json)

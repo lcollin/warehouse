@@ -66,10 +66,11 @@ func (i *SubOrder) GetAll(offset int, limit int) ([]*models.SubOrder, error) {
 
 func (i *SubOrder) Insert(suborder *models.SubOrder) error {
 	err := i.sql.Modify(
-		"INSERT INTO suborder (id, order_id, item_id) VALUE (?,?,?)",
+		"INSERT INTO suborder (id, orderID, itemID, quantity) VALUE (?,?,?,?)",
 		suborder.ID,
 		suborder.OrderID,
 		suborder.ItemID,
+		suborder.Quantity,
 	)
 
 	return err
@@ -77,9 +78,10 @@ func (i *SubOrder) Insert(suborder *models.SubOrder) error {
 
 func (i *SubOrder) Update(suborder *models.SubOrder, id string) error {
 	err := i.sql.Modify(
-		"UPDATE suborder SET user_id=?, item_id=? WHERE id=?",
+		"UPDATE suborder SET orderID=?, itemID=?, quantity=? WHERE id=?",
 		suborder.OrderID,
 		suborder.ItemID,
+		suborder.Quantity,
 		id,
 	)
 

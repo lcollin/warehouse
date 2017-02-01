@@ -38,7 +38,7 @@ func (i *Item) New(ctx *gin.Context) {
 	}
 
 	item := models.NewItem(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
-		json.ProviderPrice, json.ConsumerPrice, json.OZInBag)
+		json.ProviderPrice, json.ConsumerPrice, json.OzInBag)
 	err = i.Helper.Insert(item)
 	if err != nil {
 		i.ServerError(ctx, err, json)

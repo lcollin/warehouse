@@ -3,7 +3,6 @@ package handlers
 import (
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
-
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
@@ -11,10 +10,10 @@ import (
 
 type SubOrderIfc interface {
 	New(ctx *gin.Context)
-	GetBySubOrderId(ctx *gin.Context)
-	ViewAllSubOrders(ctx *gin.Context)
-	CreateSubOrder(ctx *gin.Context)
-	ShipSubOrder(ctx *gin.Context)
+	ViewAll(ctx *gin.Context)
+	View(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type SubOrder struct {
@@ -38,8 +37,7 @@ func (i *SubOrder) New(ctx *gin.Context) {
 		return
 	}
 
-	suborder := models.NewSubOrder(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
-		json.ProviderPrice, json.ConsumerPrice, json.OZInBag)
+	suborder := models.NewSubOrder(json.OrderID, json.ItemID, json.Quantity)
 	err = i.Helper.Insert(suborder)
 	if err != nil {
 		i.ServerError(ctx, err, json)

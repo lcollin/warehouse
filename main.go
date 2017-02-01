@@ -24,6 +24,6 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Inventory running on %s\n", config.Port)
+	fmt.Printf("warehouse running on %s\n", config.Port)
 	b.Start(":" + config.Port)
 }
