@@ -14,7 +14,7 @@ type Order struct {
 	ShipDate time.Time `json: "shipDate"`
 }
 
-func NewOrder(userID uuid.UUID) *Order {
+func NewOrder(userID uuid.UUID, subscriptionID uuid.UUID) *Order {
 	return &Order{
 		ID:     uuid.NewUUID(),
 		UserID: userID,

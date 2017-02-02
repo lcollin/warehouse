@@ -14,7 +14,7 @@ type Item struct {
 	InStockBags   int       `json: "inStock"`
 	ProviderPrice float64   `json: "providerPrice"`
 	ConsumerPrice float64   `json: "consumerPrice"`
-	OZInBag       float64   `json: "ozInBag"`
+	OzInBag       float64   `json: "ozInBag"`
 
 	// // These can be utilized in a later version if desired
 	// LeadTime      int `json: "lead_time"`
@@ -22,7 +22,7 @@ type Item struct {
 	// PipelineStock int `json: "pipeline_stock"`
 }
 
-func NewItem(shopID, name, pictureURL, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) *Item {
+func NewItem(shopID uuid.UUID, name string, pictureURL string, coffeeType string, inStock int, providerPrice float64, consumerPrice float64, ozInBag float64) *Item {
 	return &Item{
 		ID:            uuid.NewUUID(),
 		ShopID:        shopID,
@@ -32,7 +32,7 @@ func NewItem(shopID, name, pictureURL, coffeeType, inStock, providerPrice, consu
 		InStockBags:   inStock,
 		ProviderPrice: providerPrice,
 		ConsumerPrice: consumerPrice,
-		OZInBag:       ozInBag,
+		OzInBag:       ozInBag,
 	}
 }
 

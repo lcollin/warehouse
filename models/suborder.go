@@ -12,7 +12,7 @@ type SubOrder struct {
 	Quantity int `json: "quantity"`
 }
 
-func NewSubOrder(orderID, itemID uuid.UUID) *SubOrder {
+func NewSubOrder(orderID uuid.UUID, itemID uuid.UUID, quantity int) *SubOrder {
 	return &SubOrder{
 		ID:      uuid.NewUUID(),
 		OrderID: orderID,

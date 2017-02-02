@@ -106,7 +106,7 @@ func (i *Item) Update(item *models.Item, id string) error {
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
-		item.OZInBag,
+		item.OzInBag,
 		id,
 	)
 
