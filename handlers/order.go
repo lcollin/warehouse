@@ -33,18 +33,18 @@ func (o *Order) New(ctx *gin.Context) {
 	var json models.Order
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		i.UserError(ctx, "Error: Unable to parse json", err)
+		o.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
 
-	order := models.NewOrder(json.UserID, json.SubscriptionID, json.RequestDate, json.ShipDate)
-	err = i.Helper.Insert(order)
+	order := models.NewOrder(json.UserID, json.SubscriptionID)
+	err = o.Helper.Insert(order)
 	if err != nil {
-		i.ServerError(ctx, err, json)
+		o.ServerError(ctx, err, json)
 		return
 	}
 
-	i.Success(ctx, order)
+	o.Success(ctx, order)
 }
 
 func (i *Order) ViewAll(ctx *gin.Context) {

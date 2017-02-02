@@ -5,10 +5,9 @@ import (
 
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
-
 	"github.com/ghmeier/bloodlines/config"
-	"github.com/ghmeier/bloodlines/gateways"
-	"github.com/ghmeier/bloodlines/handlers"
+	g "github.com/ghmeier/bloodlines/gateways"
+	h "github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/handlers"
 )
 
@@ -20,7 +19,7 @@ type Inventory struct {
 }
 
 func New(config *config.Root) (*Inventory, error) {
-	sql, err := gateways.NewSQL(config.SQL)
+	sql, err := g.NewSQL(config.SQL)
 	if err != nil {
 		fmt.Println("ERROR: could not connect to mysql.")
 		fmt.Println(err.Error())
@@ -40,45 +39,45 @@ func New(config *config.Root) (*Inventory, error) {
 		Stats: stats,
 	}
 
-	s := &Inventory{
+	i := &Inventory{
 		item:     handlers.NewItem(ctx),
 		order:    handlers.NewOrder(ctx),
 		suborder: handlers.NewSubOrder(ctx),
 	}
 
-	InitRouter(s)
-	return s, nil
+	InitRouter(i)
+	return i, nil
 }
 
 /*InitRouter connects the handlers to endpoints with gin*/
-func InitRouter(s *Inventory) {
-	s.router = gin.Default()
+func InitRouter(i *Inventory) {
+	i.router = gin.Default()
 
-	item := tc.router.Group("/api/item")
+	item := i.router.Group("/api/item")
 	{
-		item.POST("", tc.item.New)
-		item.GET("", tc.item.ViewAll)
-		item.GET("/:itemId", tc.item.View)
-		item.PUT("/:itemId", tc.item.Update)
-		item.DELETE("/:itemId", tc.item.Delete)
+		item.POST("", i.item.New)
+		item.GET("", i.item.ViewAll)
+		item.GET("/:itemId", i.item.View)
+		item.PUT("/:itemId", i.item.Update)
+		item.DELETE("/:itemId", i.item.Delete)
 	}
 
-	order := tc.router.Group("/api/order")
+	order := i.router.Group("/api/order")
 	{
-		order.POST("", tc.order.New)
-		order.GET("", tc.order.ViewAll)
-		order.GET("/:orderId", tc.order.View)
-		order.PUT("/:orderId", tc.order.Update)
-		order.DELETE("/:orderId", tc.order.Delete)
+		order.POST("", i.order.New)
+		order.GET("", i.order.ViewAll)
+		order.GET("/:orderId", i.order.View)
+		order.PUT("/:orderId", i.order.Update)
+		order.DELETE("/:orderId", i.order.Delete)
 	}
 
-	suborder := tc.router.Group("/api/suborder")
+	suborder := i.router.Group("/api/suborder")
 	{
-		suborder.POST("", tc.suborder.New)
-		suborder.GET("", tc.suborder.ViewAll)
-		suborder.GET("/:suborderId", tc.suborder.View)
-		suborder.PUT("/:suborderId", tc.suborder.Update)
-		suborder.DELETE("/:suborderId", tc.suborder.Delete)
+		suborder.POST("", i.suborder.New)
+		suborder.GET("", i.suborder.ViewAll)
+		suborder.GET("/:suborderId", i.suborder.View)
+		suborder.PUT("/:suborderId", i.suborder.Update)
+		suborder.DELETE("/:suborderId", i.suborder.Delete)
 	}
 
 }
