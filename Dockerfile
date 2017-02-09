@@ -1,9 +1,9 @@
 FROM golang
 
 ENV PORT "8080"
-ADD ./express-inventory /go/bin/expresso-inventory
+ADD ./warehouse /go/bin/warehouse
 ADD ./config.json /go/bin/config.json
 
-ENTRYPOINT /go/bin/expresso-inventory
+ENTRYPOINT /go/bin/warehouse
 
 EXPOSE 8080
