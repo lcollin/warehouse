@@ -37,7 +37,7 @@ func (i *Item) New(ctx *gin.Context) {
 		return
 	}
 
-	item := models.NewItem(json.ShopID, json.Name, json.Picture, json.Type, json.InStockBags,
+	item := models.NewItem(json.RoasterID, json.Name, json.Picture, json.Type, json.InStockBags,
 		json.ProviderPrice, json.ConsumerPrice, json.OzInBag)
 	err = i.Helper.Insert(item)
 	if err != nil {
@@ -61,11 +61,11 @@ func (i *Item) ViewAll(ctx *gin.Context) {
 }
 
 func (i *Item) View(ctx *gin.Context) {
-	itemId := ctx.Param("itemId")
+	itemID := ctx.Param("itemID")
 
-	item, err := i.Helper.GetByID(itemId)
+	item, err := i.Helper.GetByID(itemID)
 	if err != nil {
-		i.ServerError(ctx, err, itemId)
+		i.ServerError(ctx, err, itemID)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (i *Item) View(ctx *gin.Context) {
 }
 
 func (i *Item) Update(ctx *gin.Context) {
-	itemId := ctx.Param("itemId")
+	itemID := ctx.Param("itemID")
 
 	var json models.Item
 	err := ctx.BindJSON(&json)
@@ -82,9 +82,9 @@ func (i *Item) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = i.Helper.Update(&json, itemId)
+	err = i.Helper.Update(&json, itemID)
 	if err != nil {
-		i.ServerError(ctx, err, itemId)
+		i.ServerError(ctx, err, itemID)
 		return
 	}
 
@@ -92,11 +92,11 @@ func (i *Item) Update(ctx *gin.Context) {
 }
 
 func (i *Item) Delete(ctx *gin.Context) {
-	itemId := ctx.Param("itemId")
+	itemID := ctx.Param("itemID")
 
-	err := i.Helper.Delete(itemId)
+	err := i.Helper.Delete(itemID)
 	if err != nil {
-		i.ServerError(ctx, err, itemId)
+		i.ServerError(ctx, err, itemID)
 		return
 	}
 

@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/lcollin/warehouse/models"
 )
@@ -23,7 +24,7 @@ func NewSubOrder(sql gateways.SQL) *SubOrder {
 }
 
 func (i *SubOrder) GetByID(id string) (*models.SubOrder, error) {
-	rows, err := i.sql.Select("SELECT * FROM suborder WHERE id=?", id)
+	rows, err := i.sql.Select("SELECT id, orderID, itemID, quantity FROM suborder WHERE id=?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +33,7 @@ func (i *SubOrder) GetByID(id string) (*models.SubOrder, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("len=%d", len(suborders))
 
 	return suborders[0], err
 }

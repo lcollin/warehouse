@@ -7,7 +7,7 @@ import (
 
 type ItemI interface {
 	GetByID(string) (*models.Item, error)
-	GetByShopID(string) (*models.Item, error)
+	GetByRoasterID(string) (*models.Item, error)
 	GetAll(int, int) ([]*models.Item, error)
 	GetAllInStock(int, int) ([]*models.Item, error)
 	Insert(*models.Item) error
@@ -37,8 +37,8 @@ func (i *Item) GetByID(id string) (*models.Item, error) {
 	return items[0], err
 }
 
-func (i *Item) GetByShopID(shopID string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE shopId=?", shopID)
+func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
+	rows, err := i.sql.Select("SELECT * FROM item WHERE shopID=?", roasterID)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +81,9 @@ func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
 
 func (i *Item) Insert(item *models.Item) error {
 	err := i.sql.Modify(
-		"INSERT INTO item (id, shopID, name, pictureUrl, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO item (id, roasterID, name, pictureUrl, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
 		item.ID,
-		item.ShopID,
+		item.RoasterID,
 		item.Name,
 		item.Picture,
 		item.Type,
@@ -98,8 +98,8 @@ func (i *Item) Insert(item *models.Item) error {
 
 func (i *Item) Update(item *models.Item, id string) error {
 	err := i.sql.Modify(
-		"UPDATE item SET shopId=?, name=?, pictureUrl=?, coffeeType=?, inStock=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
-		item.ShopID,
+		"UPDATE item SET shopID=?, name=?, pictureUrl=?, coffeeType=?, inStock=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
+		item.RoasterID,
 		item.Name,
 		item.Picture,
 		item.Type,

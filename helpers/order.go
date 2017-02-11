@@ -27,7 +27,7 @@ func NewOrder(sql gateways.SQL) *Order {
 }
 
 func (i *Order) GetByID(id string) (*models.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE id=?", id)
+	rows, err := i.sql.Select("SELECT * FROM orderT WHERE id=?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (i *Order) GetByID(id string) (*models.Order, error) {
 }
 
 func (i *Order) GetByUserID(userID string) (*models.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order WHERE userID=?", userID)
+	rows, err := i.sql.Select("SELECT * FROM orderT WHERE userID=?", userID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (i *Order) GetByUserID(userID string) (*models.Order, error) {
 }
 
 func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
-	rows, err := i.sql.Select("SELECT * FROM order ORDER BY id ASC LIMIT ?,?", offset, limit)
+	rows, err := i.sql.Select("SELECT * FROM orderT ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO order (id, userID, subscriptionID, requestDate, shipDate) VALUE (?,?,?,?,?)",
+		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate) VALUE (?,?,?,?,?)",
 		order.ID,
 		order.UserID,
 		order.SubscriptionID,
@@ -83,7 +83,7 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order, id string) error {
 	err := i.sql.Modify(
-		"UPDATE order SET userID=?, subscriptionID=?, requestDate=?, shipDate=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=? WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
@@ -95,6 +95,6 @@ func (i *Order) Update(order *models.Order, id string) error {
 }
 
 func (i *Order) Delete(id string) error {
-	err := i.sql.Modify("DELETE FROM order WHERE id=?", id)
+	err := i.sql.Modify("DELETE FROM orderT WHERE id=?", id)
 	return err
 }

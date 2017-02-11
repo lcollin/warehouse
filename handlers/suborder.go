@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"gopkg.in/alexcesaro/statsd.v2"
-	"gopkg.in/gin-gonic/gin.v1"
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
+	"gopkg.in/alexcesaro/statsd.v2"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 type SubOrderIfc interface {
@@ -60,11 +60,11 @@ func (i *SubOrder) ViewAll(ctx *gin.Context) {
 }
 
 func (i *SubOrder) View(ctx *gin.Context) {
-	suborderId := ctx.Param("suborderId")
+	suborderID := ctx.Param("suborderID")
 
-	suborder, err := i.Helper.GetByID(suborderId)
+	suborder, err := i.Helper.GetByID(suborderID)
 	if err != nil {
-		i.ServerError(ctx, err, suborderId)
+		i.ServerError(ctx, err, suborderID)
 		return
 	}
 
@@ -72,7 +72,7 @@ func (i *SubOrder) View(ctx *gin.Context) {
 }
 
 func (i *SubOrder) Update(ctx *gin.Context) {
-	suborderId := ctx.Param("suborderId")
+	suborderID := ctx.Param("suborderID")
 
 	var json models.SubOrder
 	err := ctx.BindJSON(&json)
@@ -81,9 +81,9 @@ func (i *SubOrder) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = i.Helper.Update(&json, suborderId)
+	err = i.Helper.Update(&json, suborderID)
 	if err != nil {
-		i.ServerError(ctx, err, suborderId)
+		i.ServerError(ctx, err, suborderID)
 		return
 	}
 
@@ -91,11 +91,11 @@ func (i *SubOrder) Update(ctx *gin.Context) {
 }
 
 func (i *SubOrder) Delete(ctx *gin.Context) {
-	suborderId := ctx.Param("suborderId")
+	suborderID := ctx.Param("suborderID")
 
-	err := i.Helper.Delete(suborderId)
+	err := i.Helper.Delete(suborderID)
 	if err != nil {
-		i.ServerError(ctx, err, suborderId)
+		i.ServerError(ctx, err, suborderID)
 		return
 	}
 

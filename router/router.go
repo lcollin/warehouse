@@ -3,12 +3,12 @@ package router
 import (
 	"fmt"
 
-	"gopkg.in/alexcesaro/statsd.v2"
-	"gopkg.in/gin-gonic/gin.v1"
 	"github.com/ghmeier/bloodlines/config"
 	g "github.com/ghmeier/bloodlines/gateways"
 	h "github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/handlers"
+	"gopkg.in/alexcesaro/statsd.v2"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 type Inventory struct {
@@ -57,27 +57,27 @@ func InitRouter(i *Inventory) {
 	{
 		item.POST("", i.item.New)
 		item.GET("", i.item.ViewAll)
-		item.GET("/:itemId", i.item.View)
-		item.PUT("/:itemId", i.item.Update)
-		item.DELETE("/:itemId", i.item.Delete)
+		item.GET("/:itemID", i.item.View)
+		item.PUT("/:itemID", i.item.Update)
+		item.DELETE("/:itemID", i.item.Delete)
 	}
 
 	order := i.router.Group("/api/order")
 	{
 		order.POST("", i.order.New)
 		order.GET("", i.order.ViewAll)
-		order.GET("/:orderId", i.order.View)
-		order.PUT("/:orderId", i.order.Update)
-		order.DELETE("/:orderId", i.order.Delete)
+		order.GET("/:orderID", i.order.View)
+		order.PUT("/:orderID", i.order.Update)
+		order.DELETE("/:orderID", i.order.Delete)
 	}
 
 	suborder := i.router.Group("/api/suborder")
 	{
 		suborder.POST("", i.suborder.New)
 		suborder.GET("", i.suborder.ViewAll)
-		suborder.GET("/:suborderId", i.suborder.View)
-		suborder.PUT("/:suborderId", i.suborder.Update)
-		suborder.DELETE("/:suborderId", i.suborder.Delete)
+		suborder.GET("/:suborderID", i.suborder.View)
+		suborder.PUT("/:suborderID", i.suborder.Update)
+		suborder.DELETE("/:suborderID", i.suborder.Delete)
 	}
 
 }
