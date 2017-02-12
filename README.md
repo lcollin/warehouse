@@ -12,7 +12,6 @@ Example:
 *Request:*
 ```
 POST localhost:8080/api/item
-```
 {
     "roasterID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
     "name": "Spring Blend",
@@ -104,7 +103,6 @@ Example:
 *Request:*
 ```
 PUT localhost:8080/api/item/1a7c63af-f15c-11e6-bad7-acbc32977aaf
-```
 {
     "id": "1a7c63af-f15c-11e6-bad7-acbc32977aaf",
     "roasterID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
@@ -160,7 +158,6 @@ Example:
 *Request:*
 ```
 POST localhost:8080/api/order
-```
 {
     "userID": "dd82cc65-d79d-11e6-9d4c-0242ac120006",
     "subscriptionID": "dd82cc65-d79d-11e6-9d4c-0242ac120005"
@@ -235,7 +232,6 @@ Example:
 *Request:*
 ```
 PUT localhost:8080/api/order/9772d7ea-f15e-11e6-bad7-acbc32977aaf
-```
 {
     "id": "9772d7ea-f15e-11e6-bad7-acbc32977aaf",
     "userID": "dd82cc65-d79d-11e6-9d4c-0242ac120006",
