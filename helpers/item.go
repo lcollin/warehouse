@@ -66,7 +66,7 @@ func (i *Item) GetAll(offset int, limit int) ([]*models.Item, error) {
 }
 
 func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE inStock>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
+	rows, err := i.sql.Select("SELECT * FROM item WHERE inStockBags>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +81,12 @@ func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
 
 func (i *Item) Insert(item *models.Item) error {
 	err := i.sql.Modify(
-		"INSERT INTO item (id, roasterID, name, pictureUrl, coffeeType, inStock, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO item (id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
 		item.ID,
 		item.RoasterID,
 		item.Name,
-		item.Picture,
-		item.Type,
+		item.PictureURL,
+		item.CoffeeType,
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
@@ -98,11 +98,11 @@ func (i *Item) Insert(item *models.Item) error {
 
 func (i *Item) Update(item *models.Item, id string) error {
 	err := i.sql.Modify(
-		"UPDATE item SET shopID=?, name=?, pictureUrl=?, coffeeType=?, inStock=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
+		"UPDATE item SET roasterID=?, name=?, pictureURL=?, coffeeType=?, inStockBags=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
 		item.RoasterID,
 		item.Name,
-		item.Picture,
-		item.Type,
+		item.PictureURL,
+		item.CoffeeType,
 		item.InStockBags,
 		item.ProviderPrice,
 		item.ConsumerPrice,
