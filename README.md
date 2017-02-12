@@ -269,3 +269,119 @@ DELETE localhost:8080/api/order/9772d7ea-f15e-11e6-bad7-acbc32977aaf
   "success": true
 }
 ```
+### SubOrder
+
+#### `POST /api/suborder` creates and adds a new suborder to the database.
+
+Example:
+
+*Request:*
+```
+POST localhost:8080/api/suborder
+{
+    "orderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+    "itemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+    "quantity": 12
+}
+```
+
+*Response:*
+```
+{
+  "data": {
+    "ID": "b39dd4a7-f160-11e6-bad7-acbc32977aaf",
+    "OrderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+    "ItemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+    "Quantity": 12
+  },
+  "success": true
+}
+```
+
+#### `GET /api/suborder?offset=0&limit=20` returns up to `limit` suborders starting from `offset` when subordered by suborderID
+
+Example:
+
+*Request:*
+```
+GET localhost:8080/api/suborder?offset=0&limit=20
+```
+
+*Response:*
+```
+{
+  "data": [
+    {
+      "ID": "b39dd4a7-f160-11e6-bad7-acbc32977aaf",
+      "OrderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+      "ItemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+      "Quantity": 12
+    }
+  ],
+  "success": true
+}
+```
+
+#### `GET /api/suborder/:suborderID` returns the suborder with the given suborderID
+
+Example:
+
+*Request:*
+```
+GET localhost:8080/api/suborder/b39dd4a7-f160-11e6-bad7-acbc32977aaf
+```
+
+*Response:*
+```
+{
+  "data": {
+    "ID": "b39dd4a7-f160-11e6-bad7-acbc32977aaf",
+    "OrderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+    "ItemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+    "Quantity": 12
+  },
+  "success": true
+}
+```
+#### `PUT /api/suborder/:suborderID` updates the suborder with the given suborderID to match the provided data. This just overrides values, so anything not present in the request will be set to NULL
+
+Example:
+
+*Request:*
+```
+PUT localhost:8080/api/suborder/9772d7ea-f15e-11e6-bad7-acbc32977aaf
+{
+    "id": "b39dd4a7-f160-11e6-bad7-acbc32977aaf",
+    "orderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+    "itemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+    "quantity": 10
+}
+```
+*Response:*
+```
+{
+  "data": {
+    "ID": "b39dd4a7-f160-11e6-bad7-acbc32977aaf",
+    "OrderID": "dd82cc65-d79d-11e6-9d4c-0242ac120004",
+    "ItemID": "dd82cc65-d79d-11e6-9d4c-0242ac120005",
+    "Quantity": 10
+  },
+  "success": true
+}
+```
+#### `DELETE /api/suborder/:suborderID` removes the suborder
+
+Example:
+
+*Request:*
+```
+DELETE localhost:8080/api/suborder/b39dd4a7-f160-11e6-bad7-acbc32977aaf
+```
+
+*Response:*
+```
+{
+  "data": null,
+  "success": true
+}
+```
