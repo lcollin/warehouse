@@ -6,8 +6,8 @@ import (
 
 	"github.com/pborman/uuid"
 
+	"github.com/ghmeier/bloodlines/config"
 	g "github.com/ghmeier/bloodlines/gateways"
-	"github.com/lcollin/warehouse/config"
 	"github.com/lcollin/warehouse/models"
 )
 

@@ -55,6 +55,7 @@ func InitRouter(i *Inventory) {
 
 	item := i.router.Group("/api/item")
 	{
+		item.Use(i.item.Time())
 		item.POST("", i.item.New)
 		item.GET("", i.item.ViewAll)
 		item.GET("/:itemID", i.item.View)
@@ -64,6 +65,7 @@ func InitRouter(i *Inventory) {
 
 	order := i.router.Group("/api/order")
 	{
+		order.Use(i.order.Time())
 		order.POST("", i.order.New)
 		order.GET("", i.order.ViewAll)
 		order.GET("/:orderID", i.order.View)
@@ -73,6 +75,7 @@ func InitRouter(i *Inventory) {
 
 	suborder := i.router.Group("/api/suborder")
 	{
+		suborder.Use(i.suborder.Time())
 		suborder.POST("", i.suborder.New)
 		suborder.GET("", i.suborder.ViewAll)
 		suborder.GET("/:suborderID", i.suborder.View)

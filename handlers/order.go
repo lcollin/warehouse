@@ -14,6 +14,7 @@ type OrderIfc interface {
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	Time() gin.HandlerFunc
 }
 
 type Order struct {

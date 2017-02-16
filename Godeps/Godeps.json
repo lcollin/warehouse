@@ -1,30 +1,37 @@
 {
 	"ImportPath": "github.com/lcollin/warehouse",
-	"GoVersion": "go1.7",
-	"GodepVersion": "v77",
+	"GoVersion": "go1.6.3",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/config",
-			"Rev": "226cd7daeefa884b12c387ed398a4da0acbd4368"
+			"Rev": "10757055f08b983670628de513c0d95813cb1df7"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/gateways",
-			"Rev": "226cd7daeefa884b12c387ed398a4da0acbd4368"
+			"Rev": "10757055f08b983670628de513c0d95813cb1df7"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/handlers",
-			"Rev": "226cd7daeefa884b12c387ed398a4da0acbd4368"
+			"Rev": "10757055f08b983670628de513c0d95813cb1df7"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/helpers",
-			"Rev": "226cd7daeefa884b12c387ed398a4da0acbd4368"
+			"Rev": "10757055f08b983670628de513c0d95813cb1df7"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/models",
-			"Rev": "226cd7daeefa884b12c387ed398a4da0acbd4368"
+			"Rev": "10757055f08b983670628de513c0d95813cb1df7"
+		},
+		{
+			"ImportPath": "github.com/ghmeier/coinage/gateways",
+			"Rev": "2560d7390136bd6ea87d531c1865bd653f38b9ce"
+		},
+		{
+			"ImportPath": "github.com/ghmeier/coinage/models",
+			"Rev": "2560d7390136bd6ea87d531c1865bd653f38b9ce"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin/binding",
@@ -47,19 +54,11 @@
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/gateways",
-			"Rev": "3dde6f8e3e1dc40a7c36e5cfba2018d95ea2c2ae"
+			"Rev": "0a6255a28dff8ab0d1a6ee5c729d35b20b4ecc98"
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/models",
-			"Rev": "3dde6f8e3e1dc40a7c36e5cfba2018d95ea2c2ae"
-		},
-		{
-			"ImportPath": "github.com/jonnykry/coinage/gateways",
-			"Rev": "ca6d90e5ef36781b458521ece533a4061c4df5e5"
-		},
-		{
-			"ImportPath": "github.com/jonnykry/coinage/models",
-			"Rev": "ca6d90e5ef36781b458521ece533a4061c4df5e5"
+			"Rev": "0a6255a28dff8ab0d1a6ee5c729d35b20b4ecc98"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",
@@ -81,183 +80,21 @@
 			"Rev": "d087004b4d47c2a378ade9eb3957571114b91493"
 		},
 		{
-			"ImportPath": "github.com/sendgrid/sendgrid-go/helpers/mail",
-			"Comment": "v3.3.1-1-gd087004",
-			"Rev": "d087004b4d47c2a378ade9eb3957571114b91493"
-		},
-		{
 			"ImportPath": "github.com/streadway/amqp",
 			"Rev": "4da4cfa085c174b489ec35cf1e29ffb147d45298"
 		},
 		{
 			"ImportPath": "github.com/stripe/stripe-go",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
+			"Comment": "v19.2.0",
+			"Rev": "3f2707ab5115e7c54c70a77aabcb386d6f405810"
 		},
 		{
-			"ImportPath": "github.com/stripe/stripe-go/account",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
+			"ImportPath": "github.com/yuderekyu/covenant/gateways",
+			"Rev": "c7ed8c4e827cb8a82146b4961581e83d1bfd3cbb"
 		},
 		{
-			"ImportPath": "github.com/stripe/stripe-go/balance",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/bankaccount",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/bitcoinreceiver",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/bitcointransaction",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/card",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/charge",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/client",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/countryspec",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/coupon",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/customer",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/discount",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/dispute",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/event",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/fee",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/feerefund",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/fileupload",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/invoice",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/invoiceitem",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/order",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/orderitem",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/orderreturn",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/paymentsource",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/plan",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/product",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/recipient",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/refund",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/reversal",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/sku",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/source",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/sub",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/token",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
-		},
-		{
-			"ImportPath": "github.com/stripe/stripe-go/transfer",
-			"Comment": "v19.3.0",
-			"Rev": "e70ebf6a1d2b00d82234e5e0c3957958299bd450"
+			"ImportPath": "github.com/yuderekyu/covenant/models",
+			"Rev": "c7ed8c4e827cb8a82146b4961581e83d1bfd3cbb"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
