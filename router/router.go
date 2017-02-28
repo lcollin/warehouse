@@ -52,6 +52,7 @@ func New(config *config.Root) (*Inventory, error) {
 /*InitRouter connects the handlers to endpoints with gin*/
 func InitRouter(i *Inventory) {
 	i.router = gin.Default()
+	i.router.Use(h.GetCors())
 
 	item := i.router.Group("/api/item")
 	{
