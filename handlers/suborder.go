@@ -15,6 +15,7 @@ type SubOrderIfc interface {
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	Time() gin.HandlerFunc
+	GetJWT() gin.HandlerFunc
 }
 
 type SubOrder struct {
