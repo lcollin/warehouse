@@ -7,10 +7,10 @@ import (
 )
 
 type SubOrder struct {
-	ID       uuid.UUID `json: "id"`
-	OrderID  uuid.UUID `json: "orderID"`
-	ItemID   uuid.UUID `json: "itemID"`
-	Quantity int       `json: "quantity"`
+	ID       uuid.UUID `json:"id"`
+	OrderID  uuid.UUID `json:"orderId"`
+	ItemID   uuid.UUID `json:"itemId"`
+	Quantity int       `json:"quantity"`
 }
 
 func NewSubOrder(orderID uuid.UUID, itemID uuid.UUID, quantity int) *SubOrder {

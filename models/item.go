@@ -6,15 +6,15 @@ import (
 )
 
 type Item struct {
-	ID            uuid.UUID `json: "id"`
-	RoasterID     uuid.UUID `json: "roasterID"`
-	Name          string    `json: "name"`
-	PictureURL    string    `json: "pictureURL"`
-	CoffeeType    string    `json: "coffeeType"`
-	InStockBags   int       `json: "inStockBags"`
-	ProviderPrice float64   `json: "providerPrice"`
-	ConsumerPrice float64   `json: "consumerPrice"`
-	OzInBag       float64   `json: "ozInBag"`
+	ID            uuid.UUID `json:"id"`
+	RoasterID     uuid.UUID `json:"roasterId"`
+	Name          string    `json:"name"`
+	PictureURL    string    `json:"pictureURL"`
+	CoffeeType    string    `json:"coffeeType"`
+	InStockBags   int       `json:"inStockBags"`
+	ProviderPrice float64   `json:"providerPrice"`
+	ConsumerPrice float64   `json:"consumerPrice"`
+	OzInBag       float64   `json:"ozInBag"`
 
 	// // These can be utilized in a later version if desired
 	// LeadTime      int `json: "lead_time"`
