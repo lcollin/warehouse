@@ -14,6 +14,7 @@ type ItemIfc interface {
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	Upload(ctx *gin.Context)
 	Time() gin.HandlerFunc
 	GetJWT() gin.HandlerFunc
 }
@@ -27,7 +28,7 @@ func NewItem(ctx *handlers.GatewayContext) ItemIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.item"))
 	return &Item{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewItem(ctx.Sql),
+		Helper:      helpers.NewItem(ctx.Sql, ctx.S3),
 	}
 }
 
@@ -99,6 +100,24 @@ func (i *Item) Delete(ctx *gin.Context) {
 	err := i.Helper.Delete(itemID)
 	if err != nil {
 		i.ServerError(ctx, err, itemID)
+		return
+	}
+
+	i.Success(ctx, nil)
+}
+
+func (i *Item) Upload(ctx *gin.Context) {
+	id := ctx.Param("itemID")
+
+	file, headers, err := ctx.Request.FormFile("photo")
+	if err != nil {
+		i.UserError(ctx, "ERROR: unable to find body", nil)
+	}
+	defer file.Close()
+
+	err = i.Helper.Upload(id, headers.Filename, file)
+	if err != nil {
+		i.ServerError(ctx, err, id)
 		return
 	}
 

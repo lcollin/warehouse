@@ -63,6 +63,7 @@ func InitRouter(i *Inventory) {
 		item.GET("/:itemID", i.item.View)
 		item.PUT("/:itemID", i.item.Update)
 		item.DELETE("/:itemID", i.item.Delete)
+		item.POST("/:itemID/photo", i.item.Upload)
 	}
 
 	order := i.router.Group("/api/order")

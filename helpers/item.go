@@ -1,6 +1,9 @@
 package helpers
 
 import (
+	"fmt"
+	"mime/multipart"
+
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/lcollin/warehouse/models"
 )
@@ -13,18 +16,23 @@ type ItemI interface {
 	Insert(*models.Item) error
 	Update(*models.Item, string) error
 	Delete(string) error
+	Upload(string, string, multipart.File) error
 }
 
 type Item struct {
 	*baseHelper
+	s3 gateways.S3
 }
 
-func NewItem(sql gateways.SQL) *Item {
-	return &Item{baseHelper: &baseHelper{sql: sql}}
+func NewItem(sql gateways.SQL, s3 gateways.S3) *Item {
+	return &Item{
+		baseHelper: &baseHelper{sql: sql},
+		s3:         s3,
+	}
 }
 
 func (i *Item) GetByID(id string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE id=?", id)
+	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE id=?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +46,7 @@ func (i *Item) GetByID(id string) (*models.Item, error) {
 }
 
 func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE shopID=?", roasterID)
+	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE shopID=?", roasterID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +60,7 @@ func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
 }
 
 func (i *Item) GetAll(offset int, limit int) ([]*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item ORDER BY id ASC LIMIT ?,?", offset, limit)
+	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +74,7 @@ func (i *Item) GetAll(offset int, limit int) ([]*models.Item, error) {
 }
 
 func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
-	rows, err := i.sql.Select("SELECT * FROM item WHERE inStockBags>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
+	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE inStockBags>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -115,5 +123,16 @@ func (i *Item) Update(item *models.Item, id string) error {
 
 func (i *Item) Delete(id string) error {
 	err := i.sql.Modify("DELETE FROM item WHERE id=?", id)
+	return err
+}
+
+func (i *Item) Upload(id string, name string, body multipart.File) error {
+	filename := fmt.Sprintf("%s-%s", id, name)
+	url, err := i.s3.Upload("item-photo", filename, body)
+	if err != nil {
+		return err
+	}
+
+	err = i.sql.Modify("UPDATE item SET photoUrl=? WHERE id=?", url, id)
 	return err
 }

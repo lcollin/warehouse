@@ -15,6 +15,7 @@ type Item struct {
 	ProviderPrice float64   `json:"providerPrice"`
 	ConsumerPrice float64   `json:"consumerPrice"`
 	OzInBag       float64   `json:"ozInBag"`
+	PhotoURL      string    `json:"photoUrl"`
 
 	// // These can be utilized in a later version if desired
 	// LeadTime      int `json: "lead_time"`
@@ -41,7 +42,7 @@ func ItemFromSQL(rows *sql.Rows) ([]*Item, error) {
 
 	for rows.Next() {
 		s := &Item{}
-		rows.Scan(&s.ID, &s.RoasterID, &s.Name, &s.PictureURL, &s.CoffeeType, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag)
+		rows.Scan(&s.ID, &s.RoasterID, &s.Name, &s.PictureURL, &s.CoffeeType, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag, &s.PhotoURL)
 		item = append(item, s)
 	}
 
