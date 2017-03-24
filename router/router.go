@@ -7,6 +7,7 @@ import (
 	g "github.com/ghmeier/bloodlines/gateways"
 	h "github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/handlers"
+
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 )

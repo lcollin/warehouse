@@ -5,13 +5,14 @@ import (
 	"mime/multipart"
 
 	"github.com/ghmeier/bloodlines/gateways"
+	"github.com/ghmeier/bloodlines/gateways/sql"
 	"github.com/lcollin/warehouse/models"
 )
 
 type ItemI interface {
 	GetByID(string) (*models.Item, error)
 	GetByRoasterID(string) (*models.Item, error)
-	GetAll(int, int) ([]*models.Item, error)
+	GetAll(int, int, sql.Search) ([]*models.Item, error)
 	GetAllInStock(int, int) ([]*models.Item, error)
 	Insert(*models.Item) error
 	Update(*models.Item, string) error
@@ -59,8 +60,8 @@ func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
 	return items[0], err
 }
 
-func (i *Item) GetAll(offset int, limit int) ([]*models.Item, error) {
-	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item ORDER BY id ASC LIMIT ?,?", offset, limit)
+func (i *Item) GetAll(offset int, limit int, search sql.Search) ([]*models.Item, error) {
+	rows, err := i.sql.Select(search.ToQuery(), offset, limit)
 	if err != nil {
 		return nil, err
 	}

@@ -53,8 +53,9 @@ func (i *Item) New(ctx *gin.Context) {
 
 func (i *Item) ViewAll(ctx *gin.Context) {
 	offset, limit := i.GetPaging(ctx)
+	search := models.ItemSearch(ctx)
 
-	items, err := i.Helper.GetAll(offset, limit)
+	items, err := i.Helper.GetAll(offset, limit, search)
 	if err != nil {
 		i.ServerError(ctx, err, items)
 		return
