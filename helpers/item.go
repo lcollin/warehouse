@@ -47,7 +47,7 @@ func (i *Item) GetByID(id string) (*models.Item, error) {
 }
 
 func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE shopID=?", roasterID)
+	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE roasterID=?", roasterID)
 	if err != nil {
 		return nil, err
 	}

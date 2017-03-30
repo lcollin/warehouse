@@ -11,6 +11,7 @@ import (
 type ItemIfc interface {
 	New(ctx *gin.Context)
 	ViewAll(ctx *gin.Context)
+	ViewByRoasterID(ctx *gin.Context)
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
@@ -56,6 +57,18 @@ func (i *Item) ViewAll(ctx *gin.Context) {
 	search := models.ItemSearch(ctx)
 
 	items, err := i.Helper.GetAll(offset, limit, search)
+	if err != nil {
+		i.ServerError(ctx, err, items)
+		return
+	}
+
+	i.Success(ctx, items)
+}
+
+func (i *Item) ViewByRoasterID(ctx *gin.Context) {
+	roasterID := ctx.Param("roasterID")
+
+	items, err := i.Helper.GetByRoasterID(roasterID)
 	if err != nil {
 		i.ServerError(ctx, err, items)
 		return
