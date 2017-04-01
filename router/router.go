@@ -55,38 +55,40 @@ func InitRouter(i *Inventory) {
 	i.router = gin.Default()
 	i.router.Use(h.GetCors())
 
-	item := i.router.Group("/api/item")
+	item := i.router.Group("/api")
 	{
 		item.Use(i.item.GetJWT())
 		item.Use(i.item.Time())
-		item.POST("", i.item.New)
-		item.GET("", i.item.ViewAll)
-		item.GET("/:itemID", i.item.View)
-		item.PUT("/:itemID", i.item.Update)
-		item.DELETE("/:itemID", i.item.Delete)
-		item.POST("/:itemID/photo", i.item.Upload)
+		item.POST("/item", i.item.New)
+		item.GET("/item", i.item.ViewAll)
+		item.GET("/item/:itemID", i.item.View)
+		item.PUT("/item/:itemID", i.item.Update)
+		item.DELETE("/item/:itemID", i.item.Delete)
+		item.POST("/item/:itemID/photo", i.item.Upload)
+
+		item.GET("/roaster/item/:roasterID", i.item.ViewByRoasterID)
 	}
 
-	order := i.router.Group("/api/order")
+	order := i.router.Group("/api")
 	{
 		order.Use(i.order.GetJWT())
 		order.Use(i.order.Time())
-		order.POST("", i.order.New)
-		order.GET("", i.order.ViewAll)
-		order.GET("/:orderID", i.order.View)
-		order.PUT("/:orderID", i.order.Update)
-		order.DELETE("/:orderID", i.order.Delete)
+		order.POST("/order", i.order.New)
+		order.GET("/order", i.order.ViewAll)
+		order.GET("/order/:orderID", i.order.View)
+		order.PUT("/order/:orderID", i.order.Update)
+		order.DELETE("/order/:orderID", i.order.Delete)
 	}
 
-	suborder := i.router.Group("/api/suborder")
+	suborder := i.router.Group("/api")
 	{
 		suborder.Use(i.suborder.GetJWT())
 		suborder.Use(i.suborder.Time())
-		suborder.POST("", i.suborder.New)
-		suborder.GET("", i.suborder.ViewAll)
-		suborder.GET("/:suborderID", i.suborder.View)
-		suborder.PUT("/:suborderID", i.suborder.Update)
-		suborder.DELETE("/:suborderID", i.suborder.Delete)
+		suborder.POST("/suborder", i.suborder.New)
+		suborder.GET("/suborder", i.suborder.ViewAll)
+		suborder.GET("/suborder/:suborderID", i.suborder.View)
+		suborder.PUT("/suborder/:suborderID", i.suborder.Update)
+		suborder.DELETE("/suborder/:suborderID", i.suborder.Delete)
 	}
 
 }
