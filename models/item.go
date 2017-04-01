@@ -31,10 +31,11 @@ type Item struct {
 
 type itemSearch struct {
 	*query.BaseSearch
-	base string
-	cost *query.SortTerm
-	name *query.SortTerm
-	id   *query.SortTerm
+	base       string
+	cost       *query.SortTerm
+	name       *query.SortTerm
+	id         *query.SortTerm
+	coffeeType *query.SortTerm
 }
 
 func NewItem(roasterID uuid.UUID, name string, pictureURL string, coffeeType string, inStockBags int, providerPrice float64, consumerPrice float64, ozInBag float64) *Item {
@@ -71,14 +72,16 @@ func ItemSearch(ctx *gin.Context) query.Search {
 	return &itemSearch{
 		BaseSearch: &query.BaseSearch{},
 		base:       "SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item",
-		cost:       query.NewSortTerm("consumerPrice", q, cost, false),
+		cost:       query.NewSortTerm("consumerPrice", "", cost, false),
 		name:       query.NewSortTerm("name", q, name, true),
+		coffeeType: query.NewSortTerm("coffeeType", q, name, true),
 		id:         query.NewSortTerm("id", "", 1, false),
 	}
 }
 
 func (i *itemSearch) ToQuery() string {
-	query := i.Limit(i.Order(i.Where(i.base, i.cost, i.name), i.id, i.cost, i.name))
+	query := i.Limit(i.Order(i.Where(i.base, i.coffeeType, i.name), i.cost, i.name, i.coffeeType, i.id))
+	fmt.Println(query)
 	fmt.Println(query)
 	return query
 }
