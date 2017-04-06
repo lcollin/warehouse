@@ -66,9 +66,10 @@ func (i *Item) ViewAll(ctx *gin.Context) {
 }
 
 func (i *Item) ViewByRoasterID(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
 	roasterID := ctx.Param("roasterID")
 
-	items, err := i.Helper.GetByRoasterID(roasterID)
+	items, err := i.Helper.GetByRoasterID(offset, limit, roasterID)
 	if err != nil {
 		i.ServerError(ctx, err, items)
 		return

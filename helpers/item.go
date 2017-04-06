@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	s "database/sql"
 	"fmt"
 	"mime/multipart"
 
@@ -11,7 +12,7 @@ import (
 
 type ItemI interface {
 	GetByID(string) (*models.Item, error)
-	GetByRoasterID(string) (*models.Item, error)
+	GetByRoasterID(int, int, string) ([]*models.Item, error)
 	GetAll(int, int, sql.Search) ([]*models.Item, error)
 	GetAllInStock(int, int) ([]*models.Item, error)
 	Insert(*models.Item) error
@@ -46,22 +47,17 @@ func (i *Item) GetByID(id string) (*models.Item, error) {
 	return items[0], err
 }
 
-func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE roasterID=?", roasterID)
+func (i *Item) GetByRoasterID(offset, limit int, roasterID string) ([]*models.Item, error) {
+	rows, err := i.sql.Select(
+		"SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE roasterID=? ORDER BY id ASC LIMIT ?,?",
+		roasterID,
+		offset,
+		limit)
 	if err != nil {
 		return nil, err
 	}
 
-	items, err := models.ItemFromSQL(rows)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(items) <= 0 {
-		return nil, nil
-	}
-
-	return items[0], err
+	return i.handleItemsQuery(rows)
 }
 
 func (i *Item) GetAll(offset int, limit int, search sql.Search) ([]*models.Item, error) {
@@ -70,12 +66,7 @@ func (i *Item) GetAll(offset int, limit int, search sql.Search) ([]*models.Item,
 		return nil, err
 	}
 
-	items, err := models.ItemFromSQL(rows)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, err
+	return i.handleItemsQuery(rows)
 }
 
 func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
@@ -84,6 +75,10 @@ func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
 		return nil, err
 	}
 
+	return i.handleItemsQuery(rows)
+}
+
+func (i *Item) handleItemsQuery(rows *s.Rows) ([]*models.Item, error) {
 	items, err := models.ItemFromSQL(rows)
 	if err != nil {
 		return nil, err
