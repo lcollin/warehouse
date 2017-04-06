@@ -57,6 +57,10 @@ func (i *Item) GetByRoasterID(roasterID string) (*models.Item, error) {
 		return nil, err
 	}
 
+	if len(items) <= 0 {
+		return nil, nil
+	}
+
 	return items[0], err
 }
 

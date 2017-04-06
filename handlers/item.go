@@ -74,6 +74,11 @@ func (i *Item) ViewByRoasterID(ctx *gin.Context) {
 		return
 	}
 
+	if items == nil {
+		i.NotFoundError(ctx, "ERROR: No items available")
+		return
+	}
+
 	i.Success(ctx, items)
 }
 
