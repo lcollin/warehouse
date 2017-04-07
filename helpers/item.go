@@ -4,6 +4,8 @@ import (
 	s "database/sql"
 	"fmt"
 	"mime/multipart"
+	"strings"
+	"time"
 
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/ghmeier/bloodlines/gateways/sql"
@@ -34,7 +36,7 @@ func NewItem(sql gateways.SQL, s3 gateways.S3) *Item {
 }
 
 func (i *Item) GetByID(id string) (*models.Item, error) {
-	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE id=?", id)
+	rows, err := i.sql.Select(models.SELECT_ALL+" FROM item WHERE id=?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +51,7 @@ func (i *Item) GetByID(id string) (*models.Item, error) {
 
 func (i *Item) GetByRoasterID(offset, limit int, roasterID string) ([]*models.Item, error) {
 	rows, err := i.sql.Select(
-		"SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE roasterID=? ORDER BY id ASC LIMIT ?,?",
+		models.SELECT_ALL+" FROM item WHERE roasterID=? ORDER BY id ASC LIMIT ?,?",
 		roasterID,
 		offset,
 		limit)
@@ -70,7 +72,7 @@ func (i *Item) GetAll(offset int, limit int, search sql.Search) ([]*models.Item,
 }
 
 func (i *Item) GetAllInStock(offset int, limit int) ([]*models.Item, error) {
-	rows, err := i.sql.Select("SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item WHERE inStockBags>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
+	rows, err := i.sql.Select(models.SELECT_ALL+" FROM item WHERE inStockBags>0 ORDER BY id ASC LIMIT ?,?", offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +91,7 @@ func (i *Item) handleItemsQuery(rows *s.Rows) ([]*models.Item, error) {
 
 func (i *Item) Insert(item *models.Item) error {
 	err := i.sql.Modify(
-		"INSERT INTO item (id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag) VALUE (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO item (id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, description, isDecaf, isActive, tags, updatedAt) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		item.ID,
 		item.RoasterID,
 		item.Name,
@@ -99,6 +101,11 @@ func (i *Item) Insert(item *models.Item) error {
 		item.ProviderPrice,
 		item.ConsumerPrice,
 		item.OzInBag,
+		item.Description,
+		item.Decaf,
+		item.Active,
+		strings.Join(item.Tags, ","),
+		time.Now(),
 	)
 
 	return err
@@ -106,7 +113,7 @@ func (i *Item) Insert(item *models.Item) error {
 
 func (i *Item) Update(item *models.Item, id string) error {
 	err := i.sql.Modify(
-		"UPDATE item SET roasterID=?, name=?, pictureURL=?, coffeeType=?, inStockBags=?, providerPrice=?, consumerPrice=?, ozInBag=? WHERE id=?",
+		"UPDATE item SET roasterID=?, name=?, pictureURL=?, coffeeType=?, inStockBags=?, providerPrice=?, consumerPrice=?, ozInBag=?, description=?, isDecaf=?, isActive=?, tags=?, updatedAt=? WHERE id=?",
 		item.RoasterID,
 		item.Name,
 		item.PictureURL,
@@ -115,6 +122,11 @@ func (i *Item) Update(item *models.Item, id string) error {
 		item.ProviderPrice,
 		item.ConsumerPrice,
 		item.OzInBag,
+		item.Description,
+		item.Decaf,
+		item.Active,
+		strings.Join(item.Tags, ","),
+		time.Now(),
 		id,
 	)
 
@@ -133,6 +145,6 @@ func (i *Item) Upload(id string, name string, body multipart.File) error {
 		return err
 	}
 
-	err = i.sql.Modify("UPDATE item SET photoUrl=? WHERE id=?", url, id)
+	err = i.sql.Modify("UPDATE item SET pictureUrl=? WHERE id=?", url, id)
 	return err
 }

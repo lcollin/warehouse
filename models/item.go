@@ -4,12 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"time"
 
 	query "github.com/ghmeier/bloodlines/gateways/sql"
+	"github.com/ghmeier/bloodlines/models"
 
 	"github.com/pborman/uuid"
 	"gopkg.in/gin-gonic/gin.v1"
 )
+
+const SELECT_ALL = "SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, description, isDecaf, isActive, tags, createdAt, updatedAt "
 
 type Item struct {
 	ID            uuid.UUID `json:"id"`
@@ -21,7 +25,12 @@ type Item struct {
 	ProviderPrice float64   `json:"providerPrice"`
 	ConsumerPrice float64   `json:"consumerPrice"`
 	OzInBag       float64   `json:"ozInBag"`
-	PhotoURL      string    `json:"photoUrl"`
+	Description   string    `json:"description"`
+	Decaf         bool      `json:"isDecaf"`
+	Active        bool      `json:"isActive"`
+	Tags          []string  `json:"tags"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
 
 	// // These can be utilized in a later version if desired
 	// LeadTime      int `json: "lead_time"`
@@ -38,17 +47,22 @@ type itemSearch struct {
 	coffeeType *query.SortTerm
 }
 
-func NewItem(roasterID uuid.UUID, name string, pictureURL string, coffeeType string, inStockBags int, providerPrice float64, consumerPrice float64, ozInBag float64) *Item {
+func NewItem(roasterID uuid.UUID, name, coffeeType, description string, tags []string, inStockBags int, providerPrice, consumerPrice, ozInBag float64, decaf, active bool) *Item {
 	return &Item{
 		ID:            uuid.NewUUID(),
 		RoasterID:     roasterID,
 		Name:          name,
-		PictureURL:    pictureURL,
 		CoffeeType:    coffeeType,
 		InStockBags:   inStockBags,
 		ProviderPrice: providerPrice,
 		ConsumerPrice: consumerPrice,
 		OzInBag:       ozInBag,
+		Description:   description,
+		Decaf:         decaf,
+		Active:        active,
+		Tags:          tags,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
 }
 
@@ -57,7 +71,24 @@ func ItemFromSQL(rows *sql.Rows) ([]*Item, error) {
 
 	for rows.Next() {
 		s := &Item{}
-		rows.Scan(&s.ID, &s.RoasterID, &s.Name, &s.PictureURL, &s.CoffeeType, &s.InStockBags, &s.ProviderPrice, &s.ConsumerPrice, &s.OzInBag, &s.PhotoURL)
+		var tagList string
+		rows.Scan(
+			&s.ID,
+			&s.RoasterID,
+			&s.Name,
+			&s.PictureURL,
+			&s.CoffeeType,
+			&s.InStockBags,
+			&s.ProviderPrice,
+			&s.ConsumerPrice,
+			&s.OzInBag,
+			&s.Description,
+			&s.Decaf,
+			&s.Active,
+			&tagList,
+			&s.CreatedAt,
+			&s.UpdatedAt)
+		s.Tags = models.ToList(tagList)
 		item = append(item, s)
 	}
 
@@ -71,7 +102,7 @@ func ItemSearch(ctx *gin.Context) query.Search {
 
 	return &itemSearch{
 		BaseSearch: &query.BaseSearch{},
-		base:       "SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag, photoUrl FROM item",
+		base:       SELECT_ALL + " FROM item",
 		cost:       query.NewSortTerm("consumerPrice", "", cost, false),
 		name:       query.NewSortTerm("name", q, name, true),
 		coffeeType: query.NewSortTerm("coffeeType", q, name, true),

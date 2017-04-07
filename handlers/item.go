@@ -41,8 +41,18 @@ func (i *Item) New(ctx *gin.Context) {
 		return
 	}
 
-	item := models.NewItem(json.RoasterID, json.Name, json.PictureURL, json.CoffeeType, json.InStockBags,
-		json.ProviderPrice, json.ConsumerPrice, json.OzInBag)
+	item := models.NewItem(
+		json.RoasterID,
+		json.Name,
+		json.CoffeeType,
+		json.Description,
+		json.Tags,
+		json.InStockBags,
+		json.ProviderPrice,
+		json.ConsumerPrice,
+		json.OzInBag,
+		json.Decaf,
+		json.Active)
 	err = i.Helper.Insert(item)
 	if err != nil {
 		i.ServerError(ctx, err, json)
