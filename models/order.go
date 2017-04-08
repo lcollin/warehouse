@@ -18,6 +18,14 @@ type Order struct {
 	LabelURL       string      `json:"labelUrl"`
 }
 
+type ShipmentRequest struct {
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"userID"`
+	RoasterID uuid.UUID `json:"roasterID"`
+	Quantity  float64   `json:"quantity"`
+	OzInBag   float64   `json:"ozInBag"`
+}
+
 func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
 	return &Order{
 		ID:             uuid.NewUUID(),

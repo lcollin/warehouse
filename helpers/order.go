@@ -3,8 +3,10 @@ package helpers
 import (
 	"fmt"
 
+	shipm "github.com/coldbrewcloud/go-shippo/models"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
+	tcm "github.com/jakelong95/TownCenter/models"
 	"github.com/lcollin/warehouse/models"
 
 	"github.com/pborman/uuid"
@@ -24,7 +26,7 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShippingLabel(id uuid.UUID) (string, error)
+	GetShippingLabel(id uuid.UUID, userID uuid.UUID, roasterID uuid.UUID) (string, error)
 }
 
 type Order struct {
@@ -83,7 +85,15 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 }
 
 /* GetShippingLabel for an order with the given ID */
-func (i *Order) GetShippingLabel(id uuid.UUID) (string, error) {
+func (i *Order) GetShippingLabel(id uuid.UUID, userID uuid.UUID, roasterID uuid.UUID) (string, error) {
+	user, err := i.TC.GetUser(userID)
+	if err != nil {
+		return "", err
+	}
+	roaster, err := i.TC.GetRoaster(roasterID)
+	if err != nil {
+		return "", err
+	}
 	order, err := i.GetByID(id.String())
 	if err != nil {
 		return "", err
@@ -96,9 +106,17 @@ func (i *Order) GetShippingLabel(id uuid.UUID) (string, error) {
 		return order.LabelURL, nil
 	}
 
-	// TODO: get url from shippo?
+	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
+	//create Shippo Client instance
+	c := shippo.NewClient(privateToken)
+	//create shipment using carrier account
+	shipment := createShipmentUsingCarrierAccount(c, user, roaster)
+	//choose and purchase shipping label
+	label := purchasingShippingLabel(c, shipment)
+	//extract url from transaction object
+	url := label.LabelURL
 
-	return "NOT IMPLEMENTED", nil
+	return url, nil
 
 }
 
@@ -119,13 +137,14 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
 		order.ShipDate,
 		order.Quantity,
 		order.Status,
+		order.LabelURL,
 		order.ID.String(),
 	)
 
