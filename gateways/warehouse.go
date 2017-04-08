@@ -37,9 +37,16 @@ type warehouse struct {
 }
 
 func NewWarehouse(config config.Warehouse) Warehouse {
+	var url string
+	if config.Port != "" {
+		url = fmt.Sprintf("http://%s:%s/api/", config.Host, config.Port)
+	} else {
+		url = fmt.Sprintf("https://%s/api/", config.Host)
+	}
+
 	return &warehouse{
 		BaseService: g.NewBaseService(),
-		url:         fmt.Sprintf("https://%s:%s/api/", config.Host, config.Port),
+		url:         url,
 	}
 }
 

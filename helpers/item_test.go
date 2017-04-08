@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ghmeier/bloodlines/gateways"
+	query "github.com/ghmeier/bloodlines/gateways/sql"
 	"github.com/lcollin/warehouse/models"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -68,7 +69,7 @@ func TestItemGetAll(t *testing.T) {
 			AddRow(uuid.New(), "RoasterID", "Name", "PictureURL", "CoffeeType", "InStockBags", "ProviderPrice", "ConsumerPrice", "OzInBag").
 			AddRow(uuid.New(), "RoasterID", "Name", "PictureURL", "CoffeeType", "InStockBags", "ProviderPrice", "ConsumerPrice", "OzInBag"))
 
-	items, err := r.GetAll(offset, limit)
+	items, err := r.GetAll(offset, limit, mockSelectQuery())
 
 	assert.Equal(mock.ExpectationsWereMet(), nil)
 	assert.NoError(err)
@@ -86,7 +87,7 @@ func TestItemGetAllError(t *testing.T) {
 		WithArgs(offset, limit).
 		WillReturnError(fmt.Errorf("This is an error"))
 
-	_, err := r.GetAll(offset, limit)
+	_, err := r.GetAll(offset, limit, &mockQuery{query: "SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag FROM item"})
 
 	assert.Equal(mock.ExpectationsWereMet(), nil)
 	assert.Error(err)
@@ -201,13 +202,29 @@ func TestDeleteItemError(t *testing.T) {
 }
 
 func getDefaultItem() *models.Item {
-	return models.NewItem("RoasterID", "Name", "PictureURL", "CoffeeType", "InStockBags", "ProviderPrice", "ConsumerPrice", "OzInBag")
+	return models.NewItem(uuid.NewUUID(), "Name", "CoffeeType", "description", make([]string, 0), 0, 0.0, 0.0, 0.0, false, false)
 }
 
 func getItemMockRows() sqlmock.Rows {
-	return sqlmock.NewRows([]string{"id", "roasterID", "name", "pictureURL", "coffeeType", "inStockBags", "providerPrice", "consumerPrice", "ozInBag"})
+	return sqlmock.NewRows([]string{"id", "roasterID", "name", "pictureURL", "coffeeType", "inStockBags", "providerPrice", "consumerPrice", "ozInBag", "description", "isDecaf", "isActive", "tags", "createdAt", "updatedAt"})
 }
 
 func getMockItem(s *sql.DB) *Item {
-	return NewItem(&gateways.MySQL{DB: s})
+	return NewItem(&gateways.MySQL{DB: s}, nil)
+}
+
+func mockSelectQuery() *mockQuery {
+	return &mockQuery{
+		BaseSearch: &query.BaseSearch{},
+		query:      "SELECT id, roasterID, name, pictureURL, coffeeType, inStockBags, providerPrice, consumerPrice, ozInBag FROM item",
+	}
+}
+
+type mockQuery struct {
+	*query.BaseSearch
+	query string
+}
+
+func (i *mockQuery) ToQuery() string {
+	return i.query
 }

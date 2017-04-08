@@ -4,6 +4,8 @@ import (
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
+
+	"github.com/pborman/uuid"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 )
@@ -39,7 +41,7 @@ func (o *Order) New(ctx *gin.Context) {
 		return
 	}
 
-	order := models.NewOrder(json.UserID, json.SubscriptionID)
+	order := models.NewOrder(json.UserID, json.SubscriptionID, json.Quantity)
 	err = o.Helper.Insert(order)
 	if err != nil {
 		o.ServerError(ctx, err, json)
@@ -83,9 +85,10 @@ func (i *Order) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = i.Helper.Update(&json, orderID)
+	json.ID = uuid.Parse(orderID)
+	err = i.Helper.Update(&json)
 	if err != nil {
-		i.ServerError(ctx, err, orderID)
+		i.ServerError(ctx, err, json)
 		return
 	}
 

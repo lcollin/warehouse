@@ -29,10 +29,8 @@ func TestOrderGetByID(t *testing.T) {
 	assert.Equal(mock.ExpectationsWereMet(), nil)
 	assert.NoError(err)
 	assert.Equal(order.ID, id)
-	assert.Equal(order.RoasterID, "UserID")
-	assert.Equal(order.Name, "SubscriptionID")
-	assert.Equal(order.CoffeeType, "RequestDate")
-	assert.Equal(order.InStockBags, "ShipDate")
+	assert.Equal(order.UserID, "UserID")
+	assert.Equal(order.SubscriptionID, "SubscriptionID")
 }
 
 func TestOrderGetByIDError(t *testing.T) {
