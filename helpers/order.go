@@ -2,13 +2,10 @@ package helpers
 
 import (
 	"fmt"
-
-	shipm "github.com/coldbrewcloud/go-shippo/models"
+	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
-	tcm "github.com/jakelong95/TownCenter/models"
 	"github.com/lcollin/warehouse/models"
-
 	"github.com/pborman/uuid"
 )
 
@@ -106,13 +103,13 @@ func (i *Order) GetShippingLabel(id uuid.UUID, userID uuid.UUID, roasterID uuid.
 		return order.LabelURL, nil
 	}
 
-	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
+	var privateToken = "" //os.Getenv("PRIVATE_TOKEN")
 	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
 	//create shipment using carrier account
-	shipment := createShipmentUsingCarrierAccount(c, user, roaster)
+	shipment := createShipment(c, user, roaster)
 	//choose and purchase shipping label
-	label := purchasingShippingLabel(c, shipment)
+	label := purchaseShippingLabel(c, shipment)
 	//extract url from transaction object
 	url := label.LabelURL
 

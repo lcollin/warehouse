@@ -1,13 +1,15 @@
 package helpers
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/coldbrewcloud/go-shippo/client"
-	tcm "github.com/jakelong95/TownCenter/models"
 	"github.com/coldbrewcloud/go-shippo/models"
+	tcm "github.com/jakelong95/TownCenter/models"
 )
 
 /*TODO: Pass given user and roaster information here*/
-func createShipment(c *client.Client, user models.User, roaster models.Roaster) {
+func createShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster) *models.Shipment {
 	//Roaster address
 	addressFromInput := &models.AddressInput{
 		ObjectPurpose: models.ObjectPurposePurchase,
@@ -42,12 +44,12 @@ func createShipment(c *client.Client, user models.User, roaster models.Roaster) 
 	}
 	//TODO: dynamically generate sizing based on size
 	parcelInput := &models.ParcelInput{
-		Length: "5",
-		Width: "5",
-		Height: "5",
+		Length:       "5",
+		Width:        "5",
+		Height:       "5",
 		DistanceUnit: models.DistanceUnitInch,
-		Weight: "5",
-		MassUnit: models.MassUnitPound,
+		Weight:       "5",
+		MassUnit:     models.MassUnitPound,
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {
@@ -56,10 +58,10 @@ func createShipment(c *client.Client, user models.User, roaster models.Roaster) 
 
 	shipmentInput := &models.ShipmentInput{
 		ObjectPurpose: models.ObjectPurposePurchase,
-		AddressFrom: addressFrom.ObjectID,
-		AddressTo: addressTo,
-		Parcel: parcel.ObjectID
-		Async: false,
+		AddressFrom:   addressFrom.ObjectID,
+		AddressTo:     addressTo.ObjectID,
+		Parcel:        parcel.ObjectID,
+		Async:         false,
 	}
 	shipment, err := c.CreateShipment(shipmentInput)
 	if err != nil {
@@ -70,16 +72,14 @@ func createShipment(c *client.Client, user models.User, roaster models.Roaster) 
 	return shipment
 }
 
-func purchaseShippingLabel(c *client.Client, shipment *models.Shipment) *models.Transaction{
-	transactionInput := &models.TransactionInput{
-		Rate: shipment.RateList[0].ObjectID, 	//TODO pick the cheapest option for Rate and pick file
-		LabelFileType: models.LabelFileTypePDF,
-		Async: false,
-	}
-	transaction, err := purchaseShippingLabel(transactionInput)
-	if err != nil {
-		panic(err)
-	}
+func purchaseShippingLabel(c *client.Client, shipment *models.Shipment) *models.Transaction {
+	// transactionInput := &models.TransactionInput{
+	// 	Rate:          shipment.RatesList[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
+	// 	LabelFileType: models.LabelFileTypePDF,
+	// 	Async:         false,
+	// }
+	transaction := purchaseShippingLabel(c, shipment)
+
 	fmt.Printf("Transaction:\n%s\n", dump(transaction))
 	return transaction
 }
