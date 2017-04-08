@@ -52,35 +52,35 @@
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/_mocks/gateways",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/config",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/gateways",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/handlers",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/helpers",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/models",
-			"Rev": "3c4ddd8afb69460e51cf2ac6c85b9696ddf51697"
+			"Rev": "2487b7038a2af87bf6d8f2515ca9e7865e6e7af9"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/coinage/gateways",
-			"Rev": "98cebaabc1ba74bcb2a6a107dfc38002cd24407b"
+			"Rev": "eba35aa3e60bf1ac02e12f46a39de7dcfc058e7b"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/coinage/models",
-			"Rev": "98cebaabc1ba74bcb2a6a107dfc38002cd24407b"
+			"Rev": "eba35aa3e60bf1ac02e12f46a39de7dcfc058e7b"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin/binding",
@@ -103,11 +103,15 @@
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/gateways",
-			"Rev": "f497d1ca5c023fefb9de95ba84109c2416103b88"
+			"Rev": "b835d493c27035649cd1525f747b8651c7f86a6f"
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/models",
-			"Rev": "f497d1ca5c023fefb9de95ba84109c2416103b88"
+			"Rev": "b835d493c27035649cd1525f747b8651c7f86a6f"
+		},
+		{
+			"ImportPath": "github.com/jarcoal/httpmock",
+			"Rev": "4442edb3db31196622da56482fd8d0fa375fba4d"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",
@@ -143,6 +147,16 @@
 			"Rev": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e"
 		},
 		{
+			"ImportPath": "github.com/stretchr/testify/require",
+			"Comment": "v1.1.4-6-g18a02ba",
+			"Rev": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/suite",
+			"Comment": "v1.1.4-6-g18a02ba",
+			"Rev": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
 			"Comment": "v1.1.4-6-g18a02ba",
 			"Rev": "18a02ba4a312f95da08ff4cfc0055750ce50ae9e"
@@ -164,11 +178,11 @@
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/gateways",
-			"Rev": "3504bd0f1c20ea42f47ae873318f7e635ad700de"
+			"Rev": "63c8506cb5fdd25ccee4cce2274cd5bb41024cef"
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/models",
-			"Rev": "3504bd0f1c20ea42f47ae873318f7e635ad700de"
+			"Rev": "63c8506cb5fdd25ccee4cce2274cd5bb41024cef"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
