@@ -6,6 +6,7 @@ import (
 	"github.com/ghmeier/bloodlines/config"
 	g "github.com/ghmeier/bloodlines/gateways"
 	h "github.com/ghmeier/bloodlines/handlers"
+	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/handlers"
 
 	"gopkg.in/alexcesaro/statsd.v2"
@@ -35,9 +36,12 @@ func New(config *config.Root) (*Inventory, error) {
 		fmt.Println(err.Error())
 	}
 
+	tc := tcg.NewTownCenter(config.TownCenter)
+
 	ctx := &h.GatewayContext{
-		Sql:   sql,
-		Stats: stats,
+		Sql:        sql,
+		Stats:      stats,
+		TownCenter: tc,
 	}
 
 	i := &Inventory{
@@ -78,6 +82,7 @@ func InitRouter(i *Inventory) {
 		order.GET("/order/:orderID", i.order.View)
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
+		order.GET("/order/:orderID/label", i.order.GetShippingLabel)
 	}
 
 	suborder := i.router.Group("/api")

@@ -21,6 +21,7 @@ type Warehouse interface {
 	GetAllOrders(offset int, limit int) ([]*models.Order, error)
 	NewOrder(newOrder *models.Order) (*models.Order, error)
 	GetOrderByID(id uuid.UUID) (*models.Order, error)
+	GetOrderLabel(id uuid.UUID) (string, error)
 	UpdateOrder(update *models.Order) (*models.Order, error)
 	DeleteOrder(id uuid.UUID) error
 	GetAllSubOrders(offset int, limit int) ([]*models.SubOrder, error)
@@ -143,6 +144,18 @@ func (w *warehouse) GetOrderByID(id uuid.UUID) (*models.Order, error) {
 	}
 
 	return &order, nil
+}
+
+func (w *warehouse) GetOrderLabel(id uuid.UUID) (string, error) {
+	url := fmt.Sprintf("%sorder/%s/label", w.url, id.String())
+
+	var label string
+	err := w.ServiceSend(http.MethodGet, url, nil, &label)
+	if err != nil {
+		return "", err
+	}
+
+	return label, nil
 }
 
 func (w *warehouse) UpdateOrder(update *models.Order) (*models.Order, error) {

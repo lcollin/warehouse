@@ -16,6 +16,7 @@ type OrderIfc interface {
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	GetShippingLabel(ctx *gin.Context)
 	Time() gin.HandlerFunc
 	GetJWT() gin.HandlerFunc
 }
@@ -29,7 +30,7 @@ func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.order"))
 	return &Order{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewOrder(ctx.Sql),
+		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter),
 	}
 }
 
@@ -68,11 +69,22 @@ func (i *Order) View(ctx *gin.Context) {
 
 	order, err := i.Helper.GetByID(orderID)
 	if err != nil {
-		i.ServerError(ctx, err, orderID)
+		i.ServerError(ctx, err, nil)
 		return
 	}
 
 	i.Success(ctx, order)
+}
+
+func (i *Order) GetShippingLabel(ctx *gin.Context) {
+	orderId := ctx.Param("orderID")
+
+	label, err := i.Helper.GetShippingLabel(uuid.Parse(orderId))
+	if err != nil {
+		i.ServerError(ctx, err, nil)
+	}
+
+	i.Success(ctx, label)
 }
 
 func (i *Order) Update(ctx *gin.Context) {

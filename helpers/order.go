@@ -1,13 +1,16 @@
 package helpers
 
 import (
+	"fmt"
+
 	"github.com/ghmeier/bloodlines/gateways"
+	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/models"
 
 	"github.com/pborman/uuid"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status "
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl "
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -21,14 +24,16 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
+	GetShippingLabel(id uuid.UUID) (string, error)
 }
 
 type Order struct {
 	*baseHelper
+	TC tcg.TownCenterI
 }
 
-func NewOrder(sql gateways.SQL) *Order {
-	return &Order{baseHelper: &baseHelper{sql: sql}}
+func NewOrder(sql gateways.SQL, tc tcg.TownCenterI) *Order {
+	return &Order{baseHelper: &baseHelper{sql: sql}, TC: tc}
 }
 
 func (i *Order) GetByID(id string) (*models.Order, error) {
@@ -75,6 +80,26 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 	}
 
 	return items, err
+}
+
+/* GetShippingLabel for an order with the given ID */
+func (i *Order) GetShippingLabel(id uuid.UUID) (string, error) {
+	order, err := i.GetByID(id.String())
+	if err != nil {
+		return "", err
+	}
+	if order == nil {
+		return "", fmt.Errorf("No order found.")
+	}
+
+	if order.LabelURL != "" {
+		return order.LabelURL, nil
+	}
+
+	// TODO: get url from shippo?
+
+	return "NOT IMPLEMENTED", nil
+
 }
 
 func (i *Order) Insert(order *models.Order) error {

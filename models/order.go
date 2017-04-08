@@ -15,6 +15,7 @@ type Order struct {
 	ShipDate       time.Time   `json:"shipDate"`
 	Quantity       int         `json:"quantity"`
 	Status         OrderStatus `json"status"`
+	LabelURL       string      `json:"labelUrl"`
 }
 
 func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
@@ -34,7 +35,7 @@ func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	for rows.Next() {
 		o := &Order{}
 		var status string
-		rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status)
+		rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL)
 		statusType, ok := toOrderStatus(status)
 		if !ok {
 			return nil, fmt.Errorf("Invalid Error Status")
