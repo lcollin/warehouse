@@ -71,4 +71,9 @@ func (_m *ItemIfc) ViewAll(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
+// ViewByRoasterID provides a mock function with given fields: ctx
+func (_m *ItemIfc) ViewByRoasterID(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 var _ handlers.ItemIfc = (*ItemIfc)(nil)
