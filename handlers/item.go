@@ -29,7 +29,7 @@ func NewItem(ctx *handlers.GatewayContext) ItemIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.item"))
 	return &Item{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewItem(ctx.Sql, ctx.S3),
+		Helper:      helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage),
 	}
 }
 
