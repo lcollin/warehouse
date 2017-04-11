@@ -167,6 +167,27 @@ func (_m *Warehouse) GetOrderByID(id uuid.UUID) (*models.Order, error) {
 	return r0, r1
 }
 
+// GetOrderLabel provides a mock function with given fields: id
+func (_m *Warehouse) GetOrderLabel(id uuid.UUID) (string, error) {
+	ret := _m.Called(id)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(uuid.UUID) string); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSubOrderByID provides a mock function with given fields: id
 func (_m *Warehouse) GetSubOrderByID(id uuid.UUID) (*models.SubOrder, error) {
 	ret := _m.Called(id)

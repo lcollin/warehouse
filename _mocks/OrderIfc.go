@@ -30,6 +30,11 @@ func (_m *OrderIfc) GetJWT() gin.HandlerFunc {
 	return r0
 }
 
+// GetShippingLabel provides a mock function with given fields: ctx
+func (_m *OrderIfc) GetShippingLabel(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // New provides a mock function with given fields: ctx
 func (_m *OrderIfc) New(ctx *gin.Context) {
 	_m.Called(ctx)
