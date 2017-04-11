@@ -23,7 +23,7 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShippingLabel(id uuid.UUID, userID uuid.UUID, roasterID uuid.UUID) (string, error)
+	GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error)
 }
 
 type Order struct {
@@ -81,37 +81,38 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 	return items, err
 }
 
-/* GetShippingLabel for an order with the given ID */
-func (i *Order) GetShippingLabel(id uuid.UUID, userID uuid.UUID, roasterID uuid.UUID) (string, error) {
-	user, err := i.TC.GetUser(userID)
+/*GetShippingLabel for an order with the given ID */
+func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error) {
+	user, err := i.TC.GetUser(shipmentRequest.UserID)
 	if err != nil {
 		return "", err
 	}
-	roaster, err := i.TC.GetRoaster(roasterID)
+	roaster, err := i.TC.GetRoaster(shipmentRequest.RoasterID)
 	if err != nil {
 		return "", err
 	}
-	order, err := i.GetByID(id.String())
+	order, err := i.GetByID(shipmentRequest.ID.String())
 	if err != nil {
 		return "", err
 	}
 	if order == nil {
 		return "", fmt.Errorf("No order found.")
 	}
-
-	if order.LabelURL != "" {
-		return order.LabelURL, nil
-	}
+	dimensions := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length, shipmentRequest.Width, shipmentRequest.Height)
 
 	var privateToken = "" //os.Getenv("PRIVATE_TOKEN")
 	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
 	//create shipment using carrier account
-	shipment := createShipment(c, user, roaster)
+	shipment := CreateShipment(c, user, roaster, order, dimensions)
 	//choose and purchase shipping label
-	label := purchaseShippingLabel(c, shipment)
+	label := PurchaseShippingLabel(c, shipment)
 	//extract url from transaction object
 	url := label.LabelURL
+
+	if order.LabelURL != "" {
+		return order.LabelURL, nil
+	}
 
 	return url, nil
 

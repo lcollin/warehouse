@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/coldbrewcloud/go-shippo/client"
-	"github.com/coldbrewcloud/go-shippo/models"
+	shipm "github.com/coldbrewcloud/go-shippo/models"
 	tcm "github.com/jakelong95/TownCenter/models"
+	"github.com/lcollin/warehouse/models"
+	"strconv"
 )
 
-/*TODO: Pass given user and roaster information here*/
-func createShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster) *models.Shipment {
+/*CreateShipment creates a shipment object, consisting of address from, address to, and parcel*/
+func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, order *models.Order, dimensions *models.Dimensions) *shipm.Shipment {
 	//Roaster address
-	addressFromInput := &models.AddressInput{
-		ObjectPurpose: models.ObjectPurposePurchase,
+	addressFromInput := &shipm.AddressInput{
+		ObjectPurpose: shipm.ObjectPurposePurchase,
 		Name:          roaster.Name,
 		Street1:       roaster.AddressLine1,
 		City:          roaster.AddressCity,
@@ -27,8 +29,8 @@ func createShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster) *mod
 		panic(err)
 	}
 	//Customer address
-	addressToInput := &models.AddressInput{
-		ObjectPurpose: models.ObjectPurposePurchase,
+	addressToInput := &shipm.AddressInput{
+		ObjectPurpose: shipm.ObjectPurposePurchase,
 		Name:          user.FirstName + " " + user.LastName,
 		Street1:       user.AddressLine1,
 		City:          user.AddressCity,
@@ -42,22 +44,22 @@ func createShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster) *mod
 	if err != nil {
 		panic(err)
 	}
-	//TODO: dynamically generate sizing based on size
-	parcelInput := &models.ParcelInput{
-		Length:       "5",
-		Width:        "5",
-		Height:       "5",
-		DistanceUnit: models.DistanceUnitInch,
-		Weight:       "5",
-		MassUnit:     models.MassUnitPound,
+	//TODO: use quantity to order multiple parcels?
+	parcelInput := &shipm.ParcelInput{
+		Length:       strconv.FormatFloat(dimensions.Length, 'f', 2, 64),
+		Width:        strconv.FormatFloat(dimensions.Width, 'f', 2, 64),
+		Height:       strconv.FormatFloat(dimensions.Height, 'f', 2, 64),
+		DistanceUnit: shipm.DistanceUnitInch,
+		Weight:       strconv.FormatFloat(dimensions.OzInBag, 'f', 2, 64),
+		MassUnit:     shipm.MassUnitOunce,
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {
 		panic(err)
 	}
 
-	shipmentInput := &models.ShipmentInput{
-		ObjectPurpose: models.ObjectPurposePurchase,
+	shipmentInput := &shipm.ShipmentInput{
+		ObjectPurpose: shipm.ObjectPurposePurchase,
 		AddressFrom:   addressFrom.ObjectID,
 		AddressTo:     addressTo.ObjectID,
 		Parcel:        parcel.ObjectID,
@@ -72,13 +74,17 @@ func createShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster) *mod
 	return shipment
 }
 
-func purchaseShippingLabel(c *client.Client, shipment *models.Shipment) *models.Transaction {
-	// transactionInput := &models.TransactionInput{
-	// 	Rate:          shipment.RatesList[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
-	// 	LabelFileType: models.LabelFileTypePDF,
-	// 	Async:         false,
-	// }
-	transaction := purchaseShippingLabel(c, shipment)
+/*PurchaseShippingLabel*/
+func PurchaseShippingLabel(c *client.Client, shipment *shipm.Shipment) *shipm.Transaction {
+	transactionInput := &shipm.TransactionInput{
+		Rate:          shipment.RatesList[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
+		LabelFileType: shipm.LabelFileTypePDF,
+		Async:         false,
+	}
+	transaction, err := c.PurchaseShippingLabel(transactionInput)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("Transaction:\n%s\n", dump(transaction))
 	return transaction

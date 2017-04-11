@@ -18,12 +18,25 @@ type Order struct {
 	LabelURL       string      `json:"labelUrl"`
 }
 
+/*ShipmentRequest represents the data needed to create a shipping label using Shippo API*/
 type ShipmentRequest struct {
 	ID        uuid.UUID `json:"id"`
 	UserID    uuid.UUID `json:"userID"`
 	RoasterID uuid.UUID `json:"roasterID"`
 	Quantity  float64   `json:"quantity"`
 	OzInBag   float64   `json:"ozInBag"`
+	Length    float64   `json:"length"`
+	Width     float64   `json:"width"`
+	Height    float64   `json:"height"`
+}
+
+/*Dimensions represent the data needed to get the correct sized shipment*/
+type Dimensions struct {
+	Quantity float64 `json:"quantity"`
+	OzInBag  float64 `json:"ozInBag"`
+	Length   float64 `json:"length"`
+	Width    float64 `json:"width"`
+	Height   float64 `json:"height"`
 }
 
 func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
@@ -34,6 +47,17 @@ func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
 		RequestDate:    time.Now(),
 		Quantity:       quantity,
 		Status:         PENDING,
+	}
+}
+
+/*NewDimensions creates a new Dimensions struct with the specified size and weight*/
+func NewDimensions(quantity float64, ozInBag float64, length float64, width float64, height float64) *Dimensions {
+	return &Dimensions{
+		Quantity: quantity,
+		OzInBag:  ozInBag,
+		Length:   length,
+		Width:    width,
+		Height:   height,
 	}
 }
 
