@@ -104,7 +104,7 @@ func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (strin
 	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
 	//create shipment using carrier account
-	shipment := CreateShipment(c, user, roaster, order, dimensions)
+	shipment := CreateShipment(c, user, roaster, dimensions)
 	//choose and purchase shipping label
 	label := PurchaseShippingLabel(c, shipment)
 	//extract url from transaction object

@@ -11,7 +11,7 @@ import (
 )
 
 /*CreateShipment creates a shipment object, consisting of address from, address to, and parcel*/
-func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, order *models.Order, dimensions *models.Dimensions) *shipm.Shipment {
+func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dimensions *models.Dimensions) *shipm.Shipment {
 	//Roaster address
 	addressFromInput := &shipm.AddressInput{
 		ObjectPurpose: shipm.ObjectPurposePurchase,
