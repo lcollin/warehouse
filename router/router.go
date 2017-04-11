@@ -6,6 +6,7 @@ import (
 	"github.com/ghmeier/bloodlines/config"
 	g "github.com/ghmeier/bloodlines/gateways"
 	h "github.com/ghmeier/bloodlines/handlers"
+	coinage "github.com/ghmeier/coinage/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/handlers"
 
@@ -37,11 +38,13 @@ func New(config *config.Root) (*Inventory, error) {
 	}
 
 	tc := tcg.NewTownCenter(config.TownCenter)
+	coinage := coinage.NewCoinage(config.Coinage)
 
 	ctx := &h.GatewayContext{
 		Sql:        sql,
 		Stats:      stats,
 		TownCenter: tc,
+		Coinage:    coinage,
 	}
 
 	i := &Inventory{

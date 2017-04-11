@@ -9,6 +9,8 @@ import (
 
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/ghmeier/bloodlines/gateways/sql"
+	c "github.com/ghmeier/coinage/gateways"
+	cmodel "github.com/ghmeier/coinage/models"
 	"github.com/lcollin/warehouse/models"
 )
 
@@ -25,13 +27,15 @@ type ItemI interface {
 
 type Item struct {
 	*baseHelper
-	s3 gateways.S3
+	s3      gateways.S3
+	Coinage c.Coinage
 }
 
-func NewItem(sql gateways.SQL, s3 gateways.S3) *Item {
+func NewItem(sql gateways.SQL, s3 gateways.S3, coinage c.Coinage) *Item {
 	return &Item{
 		baseHelper: &baseHelper{sql: sql},
 		s3:         s3,
+		Coinage:    coinage,
 	}
 }
 
@@ -108,6 +112,14 @@ func (i *Item) Insert(item *models.Item) error {
 		time.Now(),
 	)
 
+	if err != nil {
+		return err
+	}
+
+	request := &cmodel.PlanRequest{
+		ItemID: item.ID,
+	}
+	_, err = i.Coinage.NewPlan(item.RoasterID, request)
 	return err
 }
 
