@@ -174,19 +174,11 @@
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/gateways",
-<<<<<<< HEAD
-			"Rev": "1a791f88b03f15f7e0feda68079e0fa6bfb45b18"
-		},
-		{
-			"ImportPath": "github.com/yuderekyu/covenant/models",
-			"Rev": "1a791f88b03f15f7e0feda68079e0fa6bfb45b18"
-=======
 			"Rev": "63c8506cb5fdd25ccee4cce2274cd5bb41024cef"
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/models",
 			"Rev": "63c8506cb5fdd25ccee4cce2274cd5bb41024cef"
->>>>>>> bfc6e4e1be39aca869d8977031cac7652439ff64
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
