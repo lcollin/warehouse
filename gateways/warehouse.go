@@ -146,11 +146,11 @@ func (w *warehouse) GetOrderByID(id uuid.UUID) (*models.Order, error) {
 	return &order, nil
 }
 
-func (w *warehouse) GetOrderLabel(id uuid.UUID) (string, error) {
-	url := fmt.Sprintf("%sorder/%s/label", w.url, id.String())
+func (w *warehouse) GetShippingLabel(newShipmentRequest *models.ShipmentRequest) (string, error) {
+	url := fmt.Sprintf("%slabel", w.url)
 
-	var label string
-	err := w.ServiceSend(http.MethodGet, url, nil, &label)
+	var shipmentRequest models.ShipmentRequest
+	err := w.ServiceSend(http.MethodPost, url, newShipmentRequest, &shipmentRequest)
 	if err != nil {
 		return "", err
 	}
