@@ -80,10 +80,10 @@ func (i *Order) GetShippingLabel(ctx *gin.Context) {
 	var json models.ShipmentRequest
 	err := ctx.BindJSON(&json)
 	if err != nil {
-		o.UserError(ctx, "Error: Unable to parse json", err)
+		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
-	label, err := i.Helper.GetShippingLabel(json)
+	label, err := i.Helper.GetShippingLabel(&json)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
 	}

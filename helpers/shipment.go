@@ -44,14 +44,14 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	if err != nil {
 		panic(err)
 	}
-	//TODO: use quantity to order multiple parcels?
+	//TODO: dynamically choose DistanceUnit and MassUnit?
 	parcelInput := &shipm.ParcelInput{
 		Length:       strconv.FormatFloat(dimensions.Length, 'f', 2, 64),
 		Width:        strconv.FormatFloat(dimensions.Width, 'f', 2, 64),
 		Height:       strconv.FormatFloat(dimensions.Height, 'f', 2, 64),
-		DistanceUnit: shipm.DistanceUnitInch,
+		DistanceUnit: dimensions.DistanceUnit,
 		Weight:       strconv.FormatFloat(dimensions.OzInBag, 'f', 2, 64),
-		MassUnit:     shipm.MassUnitOunce,
+		MassUnit:     dimensions.MassUnit,
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {

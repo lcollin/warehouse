@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"fmt"
+	"errors"
 	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
@@ -9,7 +9,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl "
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, itemId "
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -83,23 +83,26 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 
 /*GetShippingLabel for an order with the given ID */
 func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error) {
+	//check if order exists
+	order, err := i.GetByID(shipmentRequest.OrderID.String())
+	if err != nil {
+		return "", err
+	}
+	//get user information
 	user, err := i.TC.GetUser(shipmentRequest.UserID)
 	if err != nil {
 		return "", err
 	}
+	//get roaster information
 	roaster, err := i.TC.GetRoaster(shipmentRequest.RoasterID)
 	if err != nil {
 		return "", err
 	}
-	order, err := i.GetByID(shipmentRequest.ID.String())
-	if err != nil {
-		return "", err
-	}
-	if order == nil {
-		return "", fmt.Errorf("No order found.")
-	}
-	dimensions := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length, shipmentRequest.Width, shipmentRequest.Height)
 
+	dimensions := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length,
+		shipmentRequest.Width, shipmentRequest.Height, shipmentRequest.DistanceUnit, shipmentRequest.MassUnit)
+
+	//change this so shippo is defined within the gateway
 	var privateToken = "" //os.Getenv("PRIVATE_TOKEN")
 	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
@@ -110,17 +113,21 @@ func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (strin
 	//extract url from transaction object
 	url := label.LabelURL
 
-	if order.LabelURL != "" {
-		return order.LabelURL, nil
+	if url != "" {
+		return "", errors.New("Shipping label failed to create")
 	}
 
+	// On success, insert url into database and return
+	// var order models.Order
+	order.LabelURL = url
+	i.Insert(order)
 	return url, nil
 
 }
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status) VALUE (?,?,?,?,?,?,?)",
+		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, itemId) VALUE (?,?,?,?,?,?,?,?,?)",
 		order.ID,
 		order.UserID,
 		order.SubscriptionID,
@@ -128,6 +135,8 @@ func (i *Order) Insert(order *models.Order) error {
 		order.ShipDate,
 		order.Quantity,
 		order.Status,
+		order.LabelURL,
+		order.ItemID,
 	)
 
 	return err
@@ -135,7 +144,7 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, itemId=? WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
@@ -143,6 +152,7 @@ func (i *Order) Update(order *models.Order) error {
 		order.Quantity,
 		order.Status,
 		order.LabelURL,
+		order.ItemID,
 		order.ID.String(),
 	)
 
