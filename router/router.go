@@ -37,6 +37,12 @@ func New(config *config.Root) (*Inventory, error) {
 		fmt.Println(err.Error())
 	}
 
+	rabbit, err := gateways.NewRabbit(config.Rabbit)
+	if err != nil {
+		fmt.Println("ERROR: could not connect to RabbitMQ")
+		fmt.Println(err.Error())
+	}
+
 	s3 := g.NewS3(config.S3)
 	tc := tcg.NewTownCenter(config.TownCenter)
 	coinage := coinage.NewCoinage(config.Coinage)
@@ -47,12 +53,14 @@ func New(config *config.Root) (*Inventory, error) {
 		TownCenter: tc,
 		Coinage:    coinage,
 		S3:         s3,
+		Rabbit:     rabbit,
 	}
 
 	i := &Inventory{
 		item:     handlers.NewItem(ctx),
 		order:    handlers.NewOrder(ctx),
 		suborder: handlers.NewSubOrder(ctx),
+		event:    handlers.NewEvent(ctx),
 	}
 
 	InitRouter(i)
@@ -99,6 +107,12 @@ func InitRouter(i *Inventory) {
 		suborder.GET("/suborder/:suborderID", i.suborder.View)
 		suborder.PUT("/suborder/:suborderID", i.suborder.Update)
 		suborder.DELETE("/suborder/:suborderID", i.suborder.Delete)
+	}
+
+	event := s.router.Group("/api/event")
+	{
+		event.Use(s.event.Time())
+		event.POST("", s.event.Handle)
 	}
 
 }
