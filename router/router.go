@@ -95,8 +95,8 @@ func InitRouter(i *Inventory) {
 		order.GET("/order/:orderID", i.order.View)
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
-		order.GET("/order/:orderID/label", i.order.GetShippingLabel)
 	}
+	i.router.POST("/label", i.order.GetShippingLabel)
 
 	suborder := i.router.Group("/api")
 	{

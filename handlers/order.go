@@ -77,9 +77,13 @@ func (i *Order) View(ctx *gin.Context) {
 }
 
 func (i *Order) GetShippingLabel(ctx *gin.Context) {
-	orderId := ctx.Param("orderID")
-
-	label, err := i.Helper.GetShippingLabel(uuid.Parse(orderId))
+	var json models.ShipmentRequest
+	err := ctx.BindJSON(&json)
+	if err != nil {
+		o.UserError(ctx, "Error: Unable to parse json", err)
+		return
+	}
+	label, err := i.Helper.GetShippingLabel(json)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
 	}

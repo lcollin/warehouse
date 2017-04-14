@@ -2,11 +2,10 @@ package helpers
 
 import (
 	"fmt"
-
+	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/models"
-
 	"github.com/pborman/uuid"
 )
 
@@ -24,7 +23,7 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShippingLabel(id uuid.UUID) (string, error)
+	GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error)
 }
 
 type Order struct {
@@ -82,23 +81,40 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 	return items, err
 }
 
-/* GetShippingLabel for an order with the given ID */
-func (i *Order) GetShippingLabel(id uuid.UUID) (string, error) {
-	order, err := i.GetByID(id.String())
+/*GetShippingLabel for an order with the given ID */
+func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error) {
+	user, err := i.TC.GetUser(shipmentRequest.UserID)
+	if err != nil {
+		return "", err
+	}
+	roaster, err := i.TC.GetRoaster(shipmentRequest.RoasterID)
+	if err != nil {
+		return "", err
+	}
+	order, err := i.GetByID(shipmentRequest.ID.String())
 	if err != nil {
 		return "", err
 	}
 	if order == nil {
 		return "", fmt.Errorf("No order found.")
 	}
+	dimensions := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length, shipmentRequest.Width, shipmentRequest.Height)
+
+	var privateToken = "" //os.Getenv("PRIVATE_TOKEN")
+	//create Shippo Client instance
+	c := shippo.NewClient(privateToken)
+	//create shipment using carrier account
+	shipment := CreateShipment(c, user, roaster, dimensions)
+	//choose and purchase shipping label
+	label := PurchaseShippingLabel(c, shipment)
+	//extract url from transaction object
+	url := label.LabelURL
 
 	if order.LabelURL != "" {
 		return order.LabelURL, nil
 	}
 
-	// TODO: get url from shippo?
-
-	return "NOT IMPLEMENTED", nil
+	return url, nil
 
 }
 
@@ -119,13 +135,14 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
 		order.ShipDate,
 		order.Quantity,
 		order.Status,
+		order.LabelURL,
 		order.ID.String(),
 	)
 

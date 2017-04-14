@@ -269,6 +269,30 @@ DELETE localhost:8080/api/order/9772d7ea-f15e-11e6-bad7-acbc32977aaf
   "success": true
 }
 ```
+#### `POST api/label` creates a shipping label for the specified order
+
+Example:
+
+*Request:*
+```
+POST localhost:8080/api/label
+{
+  "ID": "9772d7ea-f15e-11e6-bad7-acbc32977aaf"       
+	"UserID": "dd82cc65-d79d-11e6-9d4c-0242ac120006"
+  "RoasterID": "5afc1d5c-f562-11e6-a55c-0242ac130009"
+	"Quantity": 2
+	"OzInBag": 7.5
+}
+
+```
+
+*Response:*
+```
+{
+
+}
+```
+
 ### SubOrder
 
 #### `POST /api/suborder` creates and adds a new suborder to the database.
