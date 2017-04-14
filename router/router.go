@@ -74,8 +74,7 @@ func InitRouter(i *Inventory) {
 		item.PUT("/item/:itemID", i.item.Update)
 		item.DELETE("/item/:itemID", i.item.Delete)
 		item.POST("/item/:itemID/photo", i.item.Upload)
-
-		item.GET("/roaster/item/:roasterID", i.item.ViewByRoasterID)
+		item.GET("/roaster/item/:id", i.item.ViewByRoasterID)
 	}
 
 	order := i.router.Group("/api")
@@ -88,6 +87,8 @@ func InitRouter(i *Inventory) {
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
 		order.GET("/order/:orderID/label", i.order.GetShippingLabel)
+		order.GET("/roaster/order/:id", i.order.ViewByRoasterID)
+		order.GET("/user/order/:id", i.order.ViewByUserID)
 	}
 
 	suborder := i.router.Group("/api")

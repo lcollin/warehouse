@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/ghmeier/bloodlines/gateways"
@@ -10,7 +11,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl "
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl"
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -18,7 +19,8 @@ type baseHelper struct {
 
 type OrderI interface {
 	GetByID(string) (*models.Order, error)
-	GetByUserID(string) ([]*models.Order, error)
+	GetByUserID(uuid.UUID, int, int) ([]*models.Order, error)
+	GetByRoasterID(uuid.UUID, int, int) ([]*models.Order, error)
 	GetAll(int, int) ([]*models.Order, error)
 	Insert(*models.Order) error
 	Update(*models.Order) error
@@ -54,18 +56,28 @@ func (i *Order) GetByID(id string) (*models.Order, error) {
 	return items[0], err
 }
 
-func (i *Order) GetByUserID(userID string) ([]*models.Order, error) {
-	rows, err := i.sql.Select(SELECT_ALL+" FROM orderT WHERE userID=? ORDER BY status ASC, id ASC", userID)
+func (i *Order) GetByUserID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
+	rows, err := i.sql.Select(SELECT_ALL+" FROM orderT WHERE userID=? ORDER BY status ASC, id ASC LIMIT ?,?", id.String(), offset, limit)
 	if err != nil {
 		return nil, err
 	}
 
-	items, err := models.OrderFromSQL(rows)
+	return i.getList(rows)
+}
+
+func (i *Order) GetByRoasterID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
+	rows, err := i.sql.Select(
+		"SELECT o.id, o.userID, o.subscriptionID, o.requestDate, o.shipDate, o.quantity, o.status, o.labelUrl FROM orderT o "+
+			"INNER JOIN covenant.subscription as s ON s.id=o.subscriptionId AND s.roasterId='?' "+
+			"ORDER BY o.status ASC, id ASC LIMIT ?,?",
+		id.String(),
+		offset,
+		limit)
 	if err != nil {
 		return nil, err
 	}
 
-	return items, err
+	return i.getList(rows)
 }
 
 func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
@@ -74,12 +86,16 @@ func (i *Order) GetAll(offset int, limit int) ([]*models.Order, error) {
 		return nil, err
 	}
 
+	return i.getList(rows)
+}
+
+func (i *Order) getList(rows *sql.Rows) ([]*models.Order, error) {
 	items, err := models.OrderFromSQL(rows)
 	if err != nil {
 		return nil, err
 	}
 
-	return items, err
+	return items, nil
 }
 
 /* GetShippingLabel for an order with the given ID */

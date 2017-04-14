@@ -179,6 +179,8 @@ POST localhost:8080/api/order
 ```
 
 #### `GET /api/order?offset=0&limit=20` returns up to `limit` orders starting from `offset` when ordered by orderID
+#### `GET /api/roaster/:roasterId/order?offset=0&limit=20` returns up to `limit` orders starting from `offset` that belong to the roaster with the given id
+#### `GET /api/user/:userId/order?offset=0&limit=20` returns up to `limit` orders starting from `offset` that belong to the user with the given id
 
 Example:
 
