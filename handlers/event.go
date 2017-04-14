@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	///"fmt"
+	"fmt"
 
 	//"github.com/pborman/uuid"
+	shippo "github.com/coldbrewcloud/go-shippo/models"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
-	"github.com/lcollin/warehouse/workers"
 )
 
 /*PlanI describes the requests about billing plans that
@@ -36,35 +36,19 @@ func NewEvent(ctx *handlers.GatewayContext) EventI {
 }
 
 func (e *Event) Handle(ctx *gin.Context) {
-	// var sEvent stripe.Event
-	// err := ctx.BindJSON(&sEvent)
-	// if err != nil {
-	//  fmt.Println(err.Error())
-	//  e.ServerError(ctx, err, nil)
-	//  return
-	// }
+	var t shippo.Transaction
+	err := ctx.BindJSON(&t)
+	if err != nil {
+		fmt.Println(err.Error())
+		e.ServerError(ctx, err, nil)
+		return
+	}
 
-	// if !workers.Events[sEvent.Type] {
-	//  e.Success(ctx, nil)
-	//  return
-	// }
-
-	// err = e.Event.Send(&sEvent)
-	// if err != nil {
-	//  e.ServerError(ctx, err, nil)
-	//  return
-	// }
+	err = e.Event.Send(&t)
+	if err != nil {
+		e.ServerError(ctx, err, nil)
+		return
+	}
 
 	e.Success(ctx, nil)
 }
-
-/*
-invoice events occur when a new subscription is started:
-https://stripe.com/docs/api#invoices
-https://stripe.com/docs/api#event_types
-invoice.created
-invoice.payment_failed
-invoice.payment_succeeded
-invoice.send
-invoice.updated
-*/

@@ -6,9 +6,11 @@ import (
 	"github.com/ghmeier/bloodlines/config"
 	g "github.com/ghmeier/bloodlines/gateways"
 	h "github.com/ghmeier/bloodlines/handlers"
+	bworkers "github.com/ghmeier/bloodlines/workers"
 	coinage "github.com/ghmeier/coinage/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/handlers"
+	"github.com/lcollin/warehouse/workers"
 
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -19,6 +21,8 @@ type Inventory struct {
 	item     handlers.ItemIfc
 	order    handlers.OrderIfc
 	suborder handlers.SubOrderIfc
+	event    handlers.EventI
+	workers  []bworkers.Worker
 }
 
 func New(config *config.Root) (*Inventory, error) {
@@ -37,7 +41,7 @@ func New(config *config.Root) (*Inventory, error) {
 		fmt.Println(err.Error())
 	}
 
-	rabbit, err := gateways.NewRabbit(config.Rabbit)
+	rabbit, err := g.NewRabbit(config.Rabbit)
 	if err != nil {
 		fmt.Println("ERROR: could not connect to RabbitMQ")
 		fmt.Println(err.Error())
@@ -61,6 +65,7 @@ func New(config *config.Root) (*Inventory, error) {
 		order:    handlers.NewOrder(ctx),
 		suborder: handlers.NewSubOrder(ctx),
 		event:    handlers.NewEvent(ctx),
+		workers:  []bworkers.Worker{workers.NewShippoWorker(ctx)},
 	}
 
 	InitRouter(i)
@@ -109,10 +114,14 @@ func InitRouter(i *Inventory) {
 		suborder.DELETE("/suborder/:suborderID", i.suborder.Delete)
 	}
 
-	event := s.router.Group("/api/event")
+	event := i.router.Group("/api/event")
 	{
-		event.Use(s.event.Time())
-		event.POST("", s.event.Handle)
+		event.Use(i.event.Time())
+		event.POST("", i.event.Handle)
+	}
+
+	for _, w := range i.workers {
+		w.Consume()
 	}
 
 }

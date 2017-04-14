@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	//"github.com/pborman/uuid"
+	shippo "github.com/coldbrewcloud/go-shippo/models"
 
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/ghmeier/bloodlines/handlers"
@@ -23,29 +24,28 @@ type shippoWorker struct {
 }
 
 func NewShippoWorker(ctx *handlers.GatewayContext) workers.Worker {
-	worker := &eventWorker{
-		RB: ctx.Rabbit,
-		W:  ctx.Warehouse,
+	worker := &shippoWorker{
+		RB:   ctx.Rabbit,
+		Item: helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage),
 	}
 
 	return &workers.BaseWorker{
-		HandleFunc: b.HandleFunc(worker.handle),
+		HandleFunc: workers.HandleFunc(worker.handle),
 		RB:         ctx.Rabbit,
-		Item:       helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage),
 	}
 }
 
 func (e *shippoWorker) handle(body []byte) {
-	var event stripe.Event
-	err := json.Unmarshal(body, &event)
+	var t shippo.Transaction
+	err := json.Unmarshal(body, &t)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	switch event.Type {
-	case "invoice.created":
-		e.invoiceCreate(&event)
+	e.updateOrder(&t)
+}
 
-	}
+func (s *shippoWorker) updateOrder(t *shippo.Transaction) {
+	fmt.Println(t)
 }

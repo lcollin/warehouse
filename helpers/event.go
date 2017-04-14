@@ -1,12 +1,14 @@
 package helpers
 
 import (
+	shippo "github.com/coldbrewcloud/go-shippo/models"
+
 	"github.com/ghmeier/bloodlines/gateways"
 )
 
 /*Event helps with manipulating roaster properties*/
 type Event interface {
-	Send(interface{}) error
+	Send(*shippo.Transaction) error
 }
 
 type event struct {
@@ -20,6 +22,6 @@ func NewEvent(rabbit gateways.RabbitI) Event {
 	}
 }
 
-func (e *event) Send(sEvent interface{}) error {
-	return e.R.Produce(sEvent)
+func (e *event) Send(t *shippo.Transaction) error {
+	return e.R.Produce(t)
 }
