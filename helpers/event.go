@@ -1,8 +1,6 @@
 package helpers
 
 import (
-	"github.com/stripe/stripe-go"
-
 	"github.com/ghmeier/bloodlines/gateways"
 )
 
@@ -16,12 +14,12 @@ type event struct {
 }
 
 /*NewEvent initializes and returns a roaster with the given gateways*/
-func NewEvent(rabbit g.RabbitI) Event {
+func NewEvent(rabbit gateways.RabbitI) Event {
 	return &event{
 		R: rabbit,
 	}
 }
 
-func (e *event) Send(e interface{}) error {
-	return e.R.Produce(e)
+func (e *event) Send(sEvent interface{}) error {
+	return e.R.Produce(sEvent)
 }

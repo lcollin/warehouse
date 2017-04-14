@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/pborman/uuid"
-	"github.com/stripe/stripe-go"
+	//"github.com/pborman/uuid"
 
 	"github.com/ghmeier/bloodlines/gateways"
 	"github.com/ghmeier/bloodlines/handlers"
-	b "github.com/ghmeier/bloodlines/workers"
-	warehouse "github.com/lcollin/warehouse/gateways"
-	wmodels "github.com/lcollin/warehouse/models"
+	"github.com/ghmeier/bloodlines/workers"
+	"github.com/lcollin/warehouse/helpers"
+	//wmodels "github.com/lcollin/warehouse/models"
 )
 
 var Events = map[string]bool{
@@ -19,19 +18,20 @@ var Events = map[string]bool{
 }
 
 type shippoWorker struct {
-	RB gateways.RabbitI
-	W  waerhouse.Warehouse
+	RB   gateways.RabbitI
+	Item helpers.ItemI
 }
 
-func NewShippoWorker(ctx *handlers.GatewayContext) b.Worker {
+func NewShippoWorker(ctx *handlers.GatewayContext) workers.Worker {
 	worker := &eventWorker{
 		RB: ctx.Rabbit,
 		W:  ctx.Warehouse,
 	}
 
-	return &b.BaseWorker{
+	return &workers.BaseWorker{
 		HandleFunc: b.HandleFunc(worker.handle),
 		RB:         ctx.Rabbit,
+		Item:       helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage),
 	}
 }
 

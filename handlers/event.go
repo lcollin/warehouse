@@ -1,16 +1,15 @@
 package handlers
 
 import (
-	"fmt"
+	///"fmt"
 
 	//"github.com/pborman/uuid"
-	"github.com/stripe/stripe-go"
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ghmeier/bloodlines/handlers"
-	"github.com/ghmeier/coinage/helpers"
-	"github.com/ghmeier/coinage/workers"
+	"github.com/lcollin/warehouse/helpers"
+	"github.com/lcollin/warehouse/workers"
 )
 
 /*PlanI describes the requests about billing plans that
