@@ -127,7 +127,7 @@ func (i *Order) Insert(order *models.Order) error {
 		order.RequestDate,
 		order.ShipDate,
 		order.Quantity,
-		order.Status,
+		string(order.Status),
 	)
 
 	return err
@@ -141,7 +141,7 @@ func (i *Order) Update(order *models.Order) error {
 		order.RequestDate,
 		order.ShipDate,
 		order.Quantity,
-		order.Status,
+		string(order.Status),
 		order.ID.String(),
 	)
 

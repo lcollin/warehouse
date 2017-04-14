@@ -94,7 +94,7 @@ func (i *Item) ViewByRoasterID(ctx *gin.Context) {
 }
 
 func (i *Item) View(ctx *gin.Context) {
-	itemID := ctx.Param("id")
+	itemID := ctx.Param("itemID")
 
 	item, err := i.Helper.GetByID(itemID)
 	if err != nil {
@@ -106,7 +106,7 @@ func (i *Item) View(ctx *gin.Context) {
 }
 
 func (i *Item) Update(ctx *gin.Context) {
-	itemID := ctx.Param("id")
+	itemID := ctx.Param("itemID")
 
 	var json models.Item
 	err := ctx.BindJSON(&json)
@@ -125,7 +125,7 @@ func (i *Item) Update(ctx *gin.Context) {
 }
 
 func (i *Item) Delete(ctx *gin.Context) {
-	itemID := ctx.Param("id")
+	itemID := ctx.Param("itemID")
 
 	err := i.Helper.Delete(itemID)
 	if err != nil {
@@ -137,7 +137,7 @@ func (i *Item) Delete(ctx *gin.Context) {
 }
 
 func (i *Item) Upload(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("itemID")
 
 	file, headers, err := ctx.Request.FormFile("photo")
 	if err != nil {
