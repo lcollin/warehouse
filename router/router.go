@@ -37,6 +37,7 @@ func New(config *config.Root) (*Inventory, error) {
 		fmt.Println(err.Error())
 	}
 
+	s3 := g.NewS3(config.S3)
 	tc := tcg.NewTownCenter(config.TownCenter)
 	coinage := coinage.NewCoinage(config.Coinage)
 
@@ -45,6 +46,7 @@ func New(config *config.Root) (*Inventory, error) {
 		Stats:      stats,
 		TownCenter: tc,
 		Coinage:    coinage,
+		S3:         s3,
 	}
 
 	i := &Inventory{
