@@ -103,7 +103,7 @@ func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (strin
 		shipmentRequest.Width, shipmentRequest.Height, shipmentRequest.DistanceUnit, shipmentRequest.MassUnit)
 
 	//change this so shippo is defined within the gateway
-	var privateToken = "" //os.Getenv("PRIVATE_TOKEN")
+	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
 	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
 	//create shipment using carrier account

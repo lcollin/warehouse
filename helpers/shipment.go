@@ -49,9 +49,9 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 		Length:       strconv.FormatFloat(dimensions.Length, 'f', 2, 64),
 		Width:        strconv.FormatFloat(dimensions.Width, 'f', 2, 64),
 		Height:       strconv.FormatFloat(dimensions.Height, 'f', 2, 64),
-		DistanceUnit: dimensions.DistanceUnit,
+		DistanceUnit: "in",
 		Weight:       strconv.FormatFloat(dimensions.OzInBag, 'f', 2, 64),
-		MassUnit:     dimensions.MassUnit,
+		MassUnit:     "oz",
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {
@@ -62,11 +62,12 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 		ObjectPurpose: shipm.ObjectPurposePurchase,
 		AddressFrom:   addressFrom.ObjectID,
 		AddressTo:     addressTo.ObjectID,
-		Parcel:        parcel.ObjectID,
+		Parcel:        parcel.ObjectID, //TODO: change this within go-shippo
 		Async:         false,
 	}
 	shipment, err := c.CreateShipment(shipmentInput)
 	if err != nil {
+		fmt.Printf(parcel.ObjectID)
 		panic(err)
 	}
 	fmt.Printf("Shipment:\n%s\n", dump(shipment))

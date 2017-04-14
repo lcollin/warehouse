@@ -62,6 +62,8 @@ func InitRouter(i *Inventory) {
 	i.router = gin.Default()
 	i.router.Use(h.GetCors())
 
+	i.router.POST("/api/label", i.order.GetShippingLabel)
+
 	item := i.router.Group("/api")
 	{
 		item.Use(i.item.GetJWT())
@@ -86,7 +88,6 @@ func InitRouter(i *Inventory) {
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
 	}
-	i.router.POST("/label", i.order.GetShippingLabel)
 
 	suborder := i.router.Group("/api")
 	{

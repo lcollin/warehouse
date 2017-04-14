@@ -13,7 +13,7 @@ type Order struct {
 	SubscriptionID uuid.UUID   `json:"subscriptionId"`
 	RequestDate    time.Time   `json:"requestDate"`
 	ShipDate       time.Time   `json:"shipDate"`
-	Quantity       int         `json:"quantity"`
+	Quantity       uint64      `json:"quantity"`
 	Status         OrderStatus `json"status"`
 	LabelURL       string      `json:"labelUrl"`
 	ItemID         uuid.UUID   `json:"itemId"`
@@ -24,7 +24,7 @@ type ShipmentRequest struct {
 	OrderID      uuid.UUID `json:"orderId"`
 	UserID       uuid.UUID `json:"userId"`
 	RoasterID    uuid.UUID `json:"roasterId"`
-	Quantity     float64   `json:"quantity"`
+	Quantity     uint64    `json:"quantity"`
 	OzInBag      float64   `json:"ozInBag"`
 	Length       float64   `json:"length"`
 	Width        float64   `json:"width"`
@@ -35,7 +35,7 @@ type ShipmentRequest struct {
 
 /*Dimensions represent the data needed to get the correct sized shipment*/
 type Dimensions struct {
-	Quantity     float64 `json:"quantity" binding:"required"`
+	Quantity     uint64  `json:"quantity" binding:"required"`
 	OzInBag      float64 `json:"ozInBag" binding:"required"`
 	Length       float64 `json:"length" binding:"required"`
 	Width        float64 `json:"width" binding:"required"`
@@ -44,7 +44,7 @@ type Dimensions struct {
 	MassUnit     string  `json:"massUnit" binding:"required"`
 }
 
-func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
+func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
 	return &Order{
 		ID:             uuid.NewUUID(),
 		UserID:         userID,
@@ -56,7 +56,7 @@ func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
 }
 
 /*NewDimensions creates a new Dimensions struct with the specified size and weight*/
-func NewDimensions(quantity float64, ozInBag float64, length float64, width float64, height float64, distanceUnit string, massUnit string) *Dimensions {
+func NewDimensions(quantity uint64, ozInBag float64, length float64, width float64, height float64, distanceUnit string, massUnit string) *Dimensions {
 	return &Dimensions{
 		Quantity:     quantity,
 		OzInBag:      ozInBag,
