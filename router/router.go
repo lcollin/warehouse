@@ -37,6 +37,7 @@ func New(config *config.Root) (*Inventory, error) {
 		fmt.Println(err.Error())
 	}
 
+	s3 := g.NewS3(config.S3)
 	tc := tcg.NewTownCenter(config.TownCenter)
 	coinage := coinage.NewCoinage(config.Coinage)
 
@@ -45,6 +46,7 @@ func New(config *config.Root) (*Inventory, error) {
 		Stats:      stats,
 		TownCenter: tc,
 		Coinage:    coinage,
+		S3:         s3,
 	}
 
 	i := &Inventory{
@@ -62,8 +64,6 @@ func InitRouter(i *Inventory) {
 	i.router = gin.Default()
 	i.router.Use(h.GetCors())
 
-	i.router.POST("/api/label", i.order.GetShippingLabel)
-
 	item := i.router.Group("/api")
 	{
 		item.Use(i.item.GetJWT())
@@ -74,8 +74,7 @@ func InitRouter(i *Inventory) {
 		item.PUT("/item/:itemID", i.item.Update)
 		item.DELETE("/item/:itemID", i.item.Delete)
 		item.POST("/item/:itemID/photo", i.item.Upload)
-
-		item.GET("/roaster/item/:roasterID", i.item.ViewByRoasterID)
+		item.GET("/roaster/item/:id", i.item.ViewByRoasterID)
 	}
 
 	order := i.router.Group("/api")
@@ -87,6 +86,9 @@ func InitRouter(i *Inventory) {
 		order.GET("/order/:orderID", i.order.View)
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
+		order.GET("/roaster/order/:id", i.order.ViewByRoasterID)
+		order.GET("/user/order/:id", i.order.ViewByUserID)
+		order.POST("/label", i.order.GetShippingLabel)
 	}
 
 	suborder := i.router.Group("/api")

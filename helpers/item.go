@@ -152,7 +152,7 @@ func (i *Item) Delete(id string) error {
 
 func (i *Item) Upload(id string, name string, body multipart.File) error {
 	filename := fmt.Sprintf("%s-%s", id, name)
-	url, err := i.s3.Upload("item-photo", filename, body)
+	url, err := i.s3.Upload("profile", filename, body)
 	if err != nil {
 		return err
 	}

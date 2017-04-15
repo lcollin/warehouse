@@ -29,6 +29,8 @@ type Warehouse interface {
 	GetSubOrderByID(id uuid.UUID) (*models.SubOrder, error)
 	UpdateSubOrder(update *models.SubOrder) (*models.SubOrder, error)
 	DeleteSubOrder(id uuid.UUID) error
+	GetOrdersByUserID(id uuid.UUID, offset, limit int) ([]*models.Order, error)
+	GetOrdersByRoasterID(id uuid.UUID, offset, limit int) ([]*models.Order, error)
 }
 
 type warehouse struct {
@@ -124,6 +126,30 @@ func (w *warehouse) NewOrder(newOrder *models.Order) (*models.Order, error) {
 
 func (w *warehouse) GetAllOrders(offset int, limit int) ([]*models.Order, error) {
 	url := fmt.Sprintf("%sorder?offset=%d&limit=%d", w.url, offset, limit)
+
+	order := make([]*models.Order, 0)
+	err := w.ServiceSend(http.MethodGet, url, nil, &order)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func (w *warehouse) GetOrdersByUserID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
+	url := fmt.Sprintf("%suser/order/%s?offset=%d&limit=%d", w.url, id.String(), offset, limit)
+
+	order := make([]*models.Order, 0)
+	err := w.ServiceSend(http.MethodGet, url, nil, &order)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func (w *warehouse) GetOrdersByRoasterID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
+	url := fmt.Sprintf("%suser/order/%s?offset=%d&limit=%d", w.url, id.String(), offset, limit)
 
 	order := make([]*models.Order, 0)
 	err := w.ServiceSend(http.MethodGet, url, nil, &order)

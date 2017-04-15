@@ -17,6 +17,8 @@ type OrderIfc interface {
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	GetShippingLabel(ctx *gin.Context)
+	ViewByUserID(ctx *gin.Context)
+	ViewByRoasterID(ctx *gin.Context)
 	Time() gin.HandlerFunc
 	GetJWT() gin.HandlerFunc
 }
@@ -56,6 +58,32 @@ func (i *Order) ViewAll(ctx *gin.Context) {
 	offset, limit := i.GetPaging(ctx)
 
 	orders, err := i.Helper.GetAll(offset, limit)
+	if err != nil {
+		i.ServerError(ctx, err, orders)
+		return
+	}
+
+	i.Success(ctx, orders)
+}
+
+func (i *Order) ViewByUserID(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
+	id := ctx.Param("id")
+
+	orders, err := i.Helper.GetByUserID(uuid.Parse(id), offset, limit)
+	if err != nil {
+		i.ServerError(ctx, err, orders)
+		return
+	}
+
+	i.Success(ctx, orders)
+}
+
+func (i *Order) ViewByRoasterID(ctx *gin.Context) {
+	offset, limit := i.GetPaging(ctx)
+	id := ctx.Param("id")
+
+	orders, err := i.Helper.GetByRoasterID(uuid.Parse(id), offset, limit)
 	if err != nil {
 		i.ServerError(ctx, err, orders)
 		return
