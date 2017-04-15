@@ -32,7 +32,7 @@ func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.order"))
 	return &Order{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter),
+		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter, ctx.Bloodlines),
 	}
 }
 

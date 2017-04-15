@@ -39,6 +39,7 @@ func New(config *config.Root) (*Inventory, error) {
 
 	s3 := g.NewS3(config.S3)
 	tc := tcg.NewTownCenter(config.TownCenter)
+	bloodlines := g.NewBloodlines(config.Bloodlines)
 	coinage := coinage.NewCoinage(config.Coinage)
 
 	ctx := &h.GatewayContext{
@@ -47,6 +48,7 @@ func New(config *config.Root) (*Inventory, error) {
 		TownCenter: tc,
 		Coinage:    coinage,
 		S3:         s3,
+		Bloodlines: bloodlines,
 	}
 
 	i := &Inventory{
