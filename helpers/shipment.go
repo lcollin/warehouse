@@ -14,15 +14,14 @@ import (
 func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dimensions *models.Dimensions) *shipm.Shipment {
 	//Roaster address
 	addressFromInput := &shipm.AddressInput{
-		ObjectPurpose: shipm.ObjectPurposePurchase,
-		Name:          roaster.Name,
-		Street1:       roaster.AddressLine1,
-		City:          roaster.AddressCity,
-		State:         roaster.AddressState,
-		Zip:           roaster.AddressZip,
-		Country:       roaster.AddressCountry,
-		Phone:         roaster.Phone,
-		Email:         roaster.Email,
+		Name:    roaster.Name,
+		Street1: roaster.AddressLine1,
+		City:    roaster.AddressCity,
+		State:   roaster.AddressState,
+		Zip:     roaster.AddressZip,
+		Country: roaster.AddressCountry,
+		Phone:   roaster.Phone,
+		Email:   roaster.Email,
 	}
 	addressFrom, err := c.CreateAddress(addressFromInput)
 	if err != nil {
@@ -30,28 +29,27 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	}
 	//Customer address
 	addressToInput := &shipm.AddressInput{
-		ObjectPurpose: shipm.ObjectPurposePurchase,
-		Name:          user.FirstName + " " + user.LastName,
-		Street1:       user.AddressLine1,
-		City:          user.AddressCity,
-		State:         user.AddressState,
-		Zip:           user.AddressZip,
-		Country:       user.AddressCountry,
-		Phone:         user.Phone,
-		Email:         user.Email,
+		Name:    user.FirstName + " " + user.LastName,
+		Street1: user.AddressLine1,
+		City:    user.AddressCity,
+		State:   user.AddressState,
+		Zip:     user.AddressZip,
+		Country: user.AddressCountry,
+		Phone:   user.Phone,
+		Email:   user.Email,
 	}
 	addressTo, err := c.CreateAddress(addressToInput)
 	if err != nil {
 		panic(err)
 	}
-	//TODO: dynamically choose DistanceUnit and MassUnit?
+	//TODO: dynamically choose DistanceUnit and MassUnit
 	parcelInput := &shipm.ParcelInput{
 		Length:       strconv.FormatFloat(dimensions.Length, 'f', 2, 64),
 		Width:        strconv.FormatFloat(dimensions.Width, 'f', 2, 64),
 		Height:       strconv.FormatFloat(dimensions.Height, 'f', 2, 64),
-		DistanceUnit: "in",
+		DistanceUnit: dimensions.DistanceUnit,
 		Weight:       strconv.FormatFloat(dimensions.OzInBag, 'f', 2, 64),
-		MassUnit:     "oz",
+		MassUnit:     dimensions.MassUnit,
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {
@@ -59,11 +57,10 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	}
 
 	shipmentInput := &shipm.ShipmentInput{
-		ObjectPurpose: shipm.ObjectPurposePurchase,
-		AddressFrom:   addressFrom.ObjectID,
-		AddressTo:     addressTo.ObjectID,
-		Parcel:        parcel.ObjectID, //TODO: change this within go-shippo
-		Async:         false,
+		AddressFrom: addressFrom,
+		AddressTo:   addressTo,
+		Parcels:     []*shipm.Parcel{parcel},
+		Async:       false,
 	}
 	shipment, err := c.CreateShipment(shipmentInput)
 	if err != nil {
@@ -78,7 +75,7 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 /*PurchaseShippingLabel*/
 func PurchaseShippingLabel(c *client.Client, shipment *shipm.Shipment) *shipm.Transaction {
 	transactionInput := &shipm.TransactionInput{
-		Rate:          shipment.RatesList[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
+		Rate:          shipment.Rates[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
 		LabelFileType: shipm.LabelFileTypePDF,
 		Async:         false,
 	}

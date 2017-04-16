@@ -3,7 +3,6 @@ package helpers
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
@@ -116,9 +115,11 @@ func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (strin
 		return "", err
 	}
 
-	dimensions := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length,
+	dimensions, err := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length,
 		shipmentRequest.Width, shipmentRequest.Height, shipmentRequest.DistanceUnit, shipmentRequest.MassUnit)
-
+	if err != nil {
+		return "", err
+	}
 	//change this so shippo is defined within the gateway
 	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
 	//create Shippo Client instance
