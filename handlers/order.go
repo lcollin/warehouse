@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
@@ -26,6 +28,7 @@ type OrderIfc interface {
 type Order struct {
 	*handlers.BaseHandler
 	Helper helpers.OrderI
+	Item   helpers.ItemI
 }
 
 func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
@@ -33,6 +36,7 @@ func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
 	return &Order{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
 		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter, ctx.Bloodlines),
+		Item:        helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage, ctx.Covenant, ctx.Bloodlines, ctx.TownCenter),
 	}
 }
 
@@ -42,6 +46,20 @@ func (o *Order) New(ctx *gin.Context) {
 	if err != nil {
 		o.UserError(ctx, "Error: Unable to parse json", err)
 		return
+	}
+	item, err := o.Item.GetBySubscription(json.SubscriptionID)
+	if err != nil {
+		o.ServerError(ctx, err, json)
+		return
+	}
+	if item == nil {
+		o.NotFoundError(ctx, "Error: no item for subscription")
+		return
+	}
+
+	err = o.Item.RemoveStock(item, json.Quantity)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 
 	order := models.NewOrder(json.UserID, json.SubscriptionID, json.Quantity)

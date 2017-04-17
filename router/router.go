@@ -9,6 +9,7 @@ import (
 	coinage "github.com/ghmeier/coinage/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/handlers"
+	cg "github.com/yuderekyu/covenant/gateways"
 
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -41,12 +42,14 @@ func New(config *config.Root) (*Inventory, error) {
 	tc := tcg.NewTownCenter(config.TownCenter)
 	bloodlines := g.NewBloodlines(config.Bloodlines)
 	coinage := coinage.NewCoinage(config.Coinage)
+	covenant := cg.NewCovenant(config.Covenant)
 
 	ctx := &h.GatewayContext{
 		Sql:        sql,
 		Stats:      stats,
 		TownCenter: tc,
 		Coinage:    coinage,
+		Covenant:   covenant,
 		S3:         s3,
 		Bloodlines: bloodlines,
 	}
