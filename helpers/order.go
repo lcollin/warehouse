@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	bmodels "github.com/ghmeier/bloodlines/models"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/models"
 	"github.com/pborman/uuid"
-	"github.com/yuderekyu/go-shippo"
 )
 
 const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl"

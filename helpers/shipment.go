@@ -2,10 +2,10 @@ package helpers
 
 import (
 	"encoding/json"
+	"github.com/coldbrewcloud/go-shippo/client"
+	shipm "github.com/coldbrewcloud/go-shippo/models"
 	tcm "github.com/jakelong95/TownCenter/models"
 	"github.com/lcollin/warehouse/models"
-	"github.com/yuderekyu/go-shippo/client"
-	shipm "github.com/yuderekyu/go-shippo/models"
 	"strconv"
 )
 

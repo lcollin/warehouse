@@ -142,19 +142,24 @@
 			"Rev": "5b94aa6e6f14126d01fd9e8dcb44aed80512d4a3"
 		},
 		{
+			"ImportPath": "github.com/coldbrewcloud/go-shippo",
+			"Comment": "v1.3.0-18-gb9188c5",
+			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
+		},
+		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/client",
-			"Comment": "v1.3.0-15-ga2c0db0",
-			"Rev": "a2c0db0bec13d0d78e74503452b2257403a9e676"
+			"Comment": "v1.3.0-18-gb9188c5",
+			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/errors",
-			"Comment": "v1.3.0-15-ga2c0db0",
-			"Rev": "a2c0db0bec13d0d78e74503452b2257403a9e676"
+			"Comment": "v1.3.0-18-gb9188c5",
+			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/models",
-			"Comment": "v1.3.0-15-ga2c0db0",
-			"Rev": "a2c0db0bec13d0d78e74503452b2257403a9e676"
+			"Comment": "v1.3.0-18-gb9188c5",
+			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
 		},
 		{
 			"ImportPath": "github.com/davecgh/go-spew/spew",
@@ -492,26 +497,6 @@
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/models",
 			"Rev": "2b8c6076b372f55bbc68f1814c465220c040c941"
-		},
-		{
-			"ImportPath": "github.com/yuderekyu/go-shippo",
-			"Comment": "v1.3.0-16-g6776ed3",
-			"Rev": "6776ed3b903fe46f80a49e37dd66f1b95b9b374f"
-		},
-		{
-			"ImportPath": "github.com/yuderekyu/go-shippo/client",
-			"Comment": "v1.3.0-16-g6776ed3",
-			"Rev": "6776ed3b903fe46f80a49e37dd66f1b95b9b374f"
-		},
-		{
-			"ImportPath": "github.com/yuderekyu/go-shippo/errors",
-			"Comment": "v1.3.0-16-g6776ed3",
-			"Rev": "6776ed3b903fe46f80a49e37dd66f1b95b9b374f"
-		},
-		{
-			"ImportPath": "github.com/yuderekyu/go-shippo/models",
-			"Comment": "v1.3.0-16-g6776ed3",
-			"Rev": "6776ed3b903fe46f80a49e37dd66f1b95b9b374f"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
