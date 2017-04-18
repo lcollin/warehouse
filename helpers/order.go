@@ -27,7 +27,7 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShippingLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
+	GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
 }
 
 type Order struct {
@@ -104,10 +104,10 @@ func (i *Order) getList(rows *sql.Rows) ([]*models.Order, error) {
 }
 
 /*
-GetShippingLabel retrieves the specified order, user, and roaster information,
+GetShipmentLabel retrieves the specified order, user, and roaster information,
 then creates a shippo shipment and transaction object and updates the order's labelURL
 */
-func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error) {
+func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error) {
 	order, err := i.GetByID(shipmentRequest.OrderID.String())
 	if err != nil {
 		return nil, err
@@ -150,7 +150,7 @@ func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (*mode
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status, itemId) VALUE (?,?,?,?,?,?,?,?)",
+		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status) VALUE (?,?,?,?,?,?,?)",
 		order.ID,
 		order.UserID,
 		order.SubscriptionID,

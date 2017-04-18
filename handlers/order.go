@@ -18,7 +18,7 @@ type OrderIfc interface {
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
-	GetShippingLabel(ctx *gin.Context)
+	GetShipmentLabel(ctx *gin.Context)
 	ViewByUserID(ctx *gin.Context)
 	ViewByRoasterID(ctx *gin.Context)
 	Time() gin.HandlerFunc
@@ -122,14 +122,14 @@ func (i *Order) View(ctx *gin.Context) {
 	i.Success(ctx, order)
 }
 
-func (i *Order) GetShippingLabel(ctx *gin.Context) {
+func (i *Order) GetShipmentLabel(ctx *gin.Context) {
 	var json models.ShipmentRequest
 	err := ctx.BindJSON(&json)
 	if err != nil {
 		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
-	order, err := i.Helper.GetShippingLabel(&json)
+	order, err := i.Helper.GetShipmentLabel(&json)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
 		return
