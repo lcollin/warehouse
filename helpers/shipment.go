@@ -11,8 +11,7 @@ import (
 )
 
 /*CreateShipment creates a shipment object, consisting of address from, address to, and parcel*/
-func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dimensions *models.Dimensions) *shipm.Shipment {
-	//Roaster address
+func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dimensions *models.Dimensions) (*shipm.Shipment, error) {
 	addressFromInput := &shipm.AddressInput{
 		Name:    roaster.Name,
 		Street1: roaster.AddressLine1,
@@ -25,9 +24,9 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	}
 	addressFrom, err := c.CreateAddress(addressFromInput)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	//Customer address
+
 	addressToInput := &shipm.AddressInput{
 		Name:    user.FirstName + " " + user.LastName,
 		Street1: user.AddressLine1,
@@ -40,9 +39,9 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	}
 	addressTo, err := c.CreateAddress(addressToInput)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	//TODO: dynamically choose DistanceUnit and MassUnit
+
 	parcelInput := &shipm.ParcelInput{
 		Length:       strconv.FormatFloat(dimensions.Length, 'f', 2, 64),
 		Width:        strconv.FormatFloat(dimensions.Width, 'f', 2, 64),
@@ -53,39 +52,36 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	}
 	parcel, err := c.CreateParcel(parcelInput)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	shipmentInput := &shipm.ShipmentInput{
-		AddressFrom: addressFrom,
-		AddressTo:   addressTo,
-		Parcels:     []*shipm.Parcel{parcel},
+		AddressFrom: addressFrom.ObjectID,
+		AddressTo:   addressTo.ObjectID,
+		Parcels:     []string{parcel.ObjectID},
 		Async:       false,
 	}
 	shipment, err := c.CreateShipment(shipmentInput)
 	if err != nil {
-		fmt.Printf(parcel.ObjectID)
-		panic(err)
+		return nil, err
 	}
-	fmt.Printf("Shipment:\n%s\n", dump(shipment))
 
-	return shipment
+	return shipment, nil
 }
 
-/*PurchaseShippingLabel*/
-func PurchaseShippingLabel(c *client.Client, shipment *shipm.Shipment) *shipm.Transaction {
+/*PurchaseShippingLabel creates a transaction object*/
+func PurchaseShippingLabel(c *client.Client, shipment *shipm.Shipment) (*shipm.Transaction, error) {
 	transactionInput := &shipm.TransactionInput{
-		Rate:          shipment.Rates[0].ObjectID, //TODO pick the cheapest option for Rate and pick file
-		LabelFileType: shipm.LabelFileTypePDF,
+		Rate:          shipment.Rates[0].ObjectID, //TODO: pick the cheapest option for Rate and pick file
+		LabelFileType: shipm.LabelFileTypePDF,     //TODO: offer option of which file type?
 		Async:         false,
 	}
 	transaction, err := c.PurchaseShippingLabel(transactionInput)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	fmt.Printf("Transaction:\n%s\n", dump(transaction))
-	return transaction
+	return transaction, nil
 }
 
 func dump(v interface{}) string {

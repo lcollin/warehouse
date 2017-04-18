@@ -3,6 +3,7 @@ package helpers
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
 	tcg "github.com/jakelong95/TownCenter/gateways"
@@ -25,7 +26,7 @@ type OrderI interface {
 	Update(*models.Order) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error)
+	GetShippingLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
 }
 
 type Order struct {
@@ -42,14 +43,13 @@ func (i *Order) GetByID(id string) (*models.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	items, err := models.OrderFromSQL(rows)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(items) <= 0 {
-		return nil, nil
+		return nil, errors.New("Order does not exist")
 	}
 
 	return items[0], err
@@ -97,49 +97,48 @@ func (i *Order) getList(rows *sql.Rows) ([]*models.Order, error) {
 	return items, nil
 }
 
-/*GetShippingLabel for an order with the given ID */
-func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (string, error) {
-	//check if order exists
+/*
+GetShippingLabel retrieves the specified order, user, and roaster information,
+then creates a shippo shipment and transaction object and updates the order's labelURL
+*/
+func (i *Order) GetShippingLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error) {
 	order, err := i.GetByID(shipmentRequest.OrderID.String())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	//get user information
 	user, err := i.TC.GetUser(shipmentRequest.UserID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	//get roaster information
 	roaster, err := i.TC.GetRoaster(shipmentRequest.RoasterID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
 	dimensions, err := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length,
 		shipmentRequest.Width, shipmentRequest.Height, shipmentRequest.DistanceUnit, shipmentRequest.MassUnit)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	//change this so shippo is defined within the gateway
+	//TODO: insert token within config
 	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
-	//create Shippo Client instance
 	c := shippo.NewClient(privateToken)
-	//create shipment using carrier account
-	shipment := CreateShipment(c, user, roaster, dimensions)
-	//choose and purchase shipping label
-	label := PurchaseShippingLabel(c, shipment)
-	//extract url from transaction object
-	url := label.LabelURL
 
-	if url != "" {
-		return "", errors.New("Shipping label failed to create")
+	shipment, err := CreateShipment(c, user, roaster, dimensions)
+	if err != nil {
+		return nil, err
 	}
 
-	// On success, insert url into database and return
-	// var order models.Order
-	order.LabelURL = url
-	i.Insert(order)
-	return url, nil
+	transaction, err := PurchaseShippingLabel(c, shipment)
+	if err != nil {
+		return nil, err
+	}
+
+	order.SetLabelURL(transaction.LabelURL)
+	err = i.SetLabelURL(order.ID, transaction.LabelURL)
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
 
 }
 
@@ -171,6 +170,11 @@ func (i *Order) Update(order *models.Order) error {
 		order.ID.String(),
 	)
 
+	return err
+}
+
+func (i *Order) SetLabelURL(id uuid.UUID, labelURL string) error {
+	err := i.sql.Modify("UPDATE orderT SET labelURL=? WHERE id=?", labelURL, id.String())
 	return err
 }
 

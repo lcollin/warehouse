@@ -111,12 +111,13 @@ func (i *Order) GetShippingLabel(ctx *gin.Context) {
 		i.UserError(ctx, "Error: Unable to parse json", err)
 		return
 	}
-	label, err := i.Helper.GetShippingLabel(&json)
+	order, err := i.Helper.GetShippingLabel(&json)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
+		return
 	}
 
-	i.Success(ctx, label)
+	i.Success(ctx, order)
 }
 
 func (i *Order) Update(ctx *gin.Context) {
