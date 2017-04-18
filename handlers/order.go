@@ -57,7 +57,7 @@ func (o *Order) New(ctx *gin.Context) {
 		return
 	}
 
-	err = o.Item.RemoveStock(item, json.Quantity)
+	err = o.Item.RemoveStock(item, int(json.Quantity))
 	if err != nil {
 		fmt.Println(err.Error())
 	}
