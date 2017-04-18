@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/coldbrewcloud/go-shippo"
 	"github.com/ghmeier/bloodlines/gateways"
+	bmodels "github.com/ghmeier/bloodlines/models"
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/models"
 	"github.com/pborman/uuid"
@@ -32,10 +33,15 @@ type OrderI interface {
 type Order struct {
 	*baseHelper
 	TC tcg.TownCenterI
+	B  gateways.Bloodlines
 }
 
-func NewOrder(sql gateways.SQL, tc tcg.TownCenterI) *Order {
-	return &Order{baseHelper: &baseHelper{sql: sql}, TC: tc}
+func NewOrder(sql gateways.SQL, tc tcg.TownCenterI, b gateways.Bloodlines) *Order {
+	return &Order{
+		baseHelper: &baseHelper{sql: sql},
+		TC:         tc,
+		B:          b,
+	}
 }
 
 func (i *Order) GetByID(id string) (*models.Order, error) {
@@ -154,7 +160,35 @@ func (i *Order) Insert(order *models.Order) error {
 		string(order.Status),
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	user, err := i.TC.GetUser(order.UserID)
+	if err != nil || user == nil {
+		return err
+	}
+
+	addr := fmt.Sprintf(
+		"%s\n%s\n%s, %s, %s, %s",
+		user.AddressLine1,
+		user.AddressLine2,
+		user.AddressCity,
+		user.AddressState,
+		user.AddressCountry,
+		user.AddressZip)
+
+	i.B.ActivateTrigger("roaster_create_order", &bmodels.Receipt{
+		UserID: user.ID,
+		Values: map[string]string{
+			"first_name":   user.FirstName,
+			"last_name":    user.LastName,
+			"quantity":     fmt.Sprintf("%d", order.Quantity),
+			"request_date": order.RequestDate.String(),
+			"address":      addr,
+		},
+	})
+	return nil
 }
 
 func (i *Order) Update(order *models.Order) error {

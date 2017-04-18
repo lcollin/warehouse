@@ -188,6 +188,52 @@ func (_m *Warehouse) GetOrderLabel(id uuid.UUID) (string, error) {
 	return r0, r1
 }
 
+// GetOrdersByRoasterID provides a mock function with given fields: id, offset, limit
+func (_m *Warehouse) GetOrdersByRoasterID(id uuid.UUID, offset int, limit int) ([]*models.Order, error) {
+	ret := _m.Called(id, offset, limit)
+
+	var r0 []*models.Order
+	if rf, ok := ret.Get(0).(func(uuid.UUID, int, int) []*models.Order); ok {
+		r0 = rf(id, offset, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Order)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uuid.UUID, int, int) error); ok {
+		r1 = rf(id, offset, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetOrdersByUserID provides a mock function with given fields: id, offset, limit
+func (_m *Warehouse) GetOrdersByUserID(id uuid.UUID, offset int, limit int) ([]*models.Order, error) {
+	ret := _m.Called(id, offset, limit)
+
+	var r0 []*models.Order
+	if rf, ok := ret.Get(0).(func(uuid.UUID, int, int) []*models.Order); ok {
+		r0 = rf(id, offset, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Order)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uuid.UUID, int, int) error); ok {
+		r1 = rf(id, offset, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSubOrderByID provides a mock function with given fields: id
 func (_m *Warehouse) GetSubOrderByID(id uuid.UUID) (*models.SubOrder, error) {
 	ret := _m.Called(id)

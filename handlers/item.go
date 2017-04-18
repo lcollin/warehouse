@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"github.com/pborman/uuid"
+	"gopkg.in/alexcesaro/statsd.v2"
+	"gopkg.in/gin-gonic/gin.v1"
+
 	"github.com/ghmeier/bloodlines/handlers"
 	"github.com/lcollin/warehouse/helpers"
 	"github.com/lcollin/warehouse/models"
-	"gopkg.in/alexcesaro/statsd.v2"
-	"gopkg.in/gin-gonic/gin.v1"
 )
 
 type ItemIfc interface {
@@ -29,7 +31,7 @@ func NewItem(ctx *handlers.GatewayContext) ItemIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.item"))
 	return &Item{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage),
+		Helper:      helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage, ctx.Covenant, ctx.Bloodlines, ctx.TownCenter),
 	}
 }
 
@@ -115,9 +117,10 @@ func (i *Item) Update(ctx *gin.Context) {
 		return
 	}
 
-	err = i.Helper.Update(&json, itemID)
+	json.ID = uuid.Parse(itemID)
+	err = i.Helper.Update(&json)
 	if err != nil {
-		i.ServerError(ctx, err, itemID)
+		i.ServerError(ctx, err, json.ID)
 		return
 	}
 
@@ -142,6 +145,7 @@ func (i *Item) Upload(ctx *gin.Context) {
 	file, headers, err := ctx.Request.FormFile("photo")
 	if err != nil {
 		i.UserError(ctx, "ERROR: unable to find body", nil)
+		return
 	}
 	defer file.Close()
 
