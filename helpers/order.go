@@ -160,7 +160,7 @@ func (i *Order) Insert(order *models.Order) error {
 			"first_name":   user.FirstName,
 			"last_name":    user.LastName,
 			"quantity":     fmt.Sprintf("%d", order.Quantity),
-			"request_date": order.RequestDate.String(),
+			"request_date": order.RequestDate.Format("Mon May 2, 2017"),
 			"address":      addr,
 		},
 	})
