@@ -178,8 +178,10 @@ func (i *Item) RemoveStock(item *models.Item, quantity int) error {
 	}
 
 	user, roaster, err := i.owner(item)
-	if err == nil || user == nil || roaster == nil {
-		fmt.Println(err.Error())
+	if err != nil || user == nil || roaster == nil {
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		return retErr
 	}
 
@@ -205,7 +207,7 @@ func (i *Item) RemoveStock(item *models.Item, quantity int) error {
 			"roaster_name": roaster.Name,
 			"quantity":     strconv.Itoa(quantity),
 			"bean_name":    item.Name,
-			"remaining":    strconv.Itoa(item.InStockBags - quantity),
+			"remaining":    strconv.Itoa(item.InStockBags),
 		},
 	})
 	return retErr

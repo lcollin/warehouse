@@ -75,7 +75,7 @@ func (i *Order) GetByUserID(id uuid.UUID, offset, limit int) ([]*models.Order, e
 func (i *Order) GetByRoasterID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
 	rows, err := i.sql.Select(
 		"SELECT o.id, o.userID, o.subscriptionID, o.requestDate, o.shipDate, o.quantity, o.status, o.labelUrl FROM orderT o "+
-			"INNER JOIN covenant.subscription as s ON s.id=o.subscriptionId AND s.roasterId='?' "+
+			"INNER JOIN covenant.subscription as s ON s.id=o.subscriptionId AND s.roasterId=? "+
 			"ORDER BY o.status ASC, id ASC LIMIT ?,?",
 		id.String(),
 		offset,
@@ -192,7 +192,7 @@ func (i *Order) Insert(order *models.Order) error {
 			"first_name":   user.FirstName,
 			"last_name":    user.LastName,
 			"quantity":     fmt.Sprintf("%d", order.Quantity),
-			"request_date": order.RequestDate.String(),
+			"request_date": order.RequestDate.Format("Mon May 2, 2017"),
 			"address":      addr,
 		},
 	})
