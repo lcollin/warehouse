@@ -12,7 +12,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl"
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, trackingUrl"
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -25,6 +25,7 @@ type OrderI interface {
 	GetAll(int, int) ([]*models.Order, error)
 	Insert(*models.Order) error
 	Update(*models.Order) error
+	SetURL(uuid.UUID, string, string) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
 	GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
@@ -45,6 +46,7 @@ func NewOrder(sql gateways.SQL, tc tcg.TownCenterI, b gateways.Bloodlines) *Orde
 }
 
 func (i *Order) GetByID(id string) (*models.Order, error) {
+	fmt.Printf("Id: %s\n", id)
 	rows, err := i.sql.Select(SELECT_ALL+" FROM orderT WHERE id=?", id)
 	if err != nil {
 		return nil, err
@@ -112,21 +114,25 @@ func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*mode
 	if err != nil {
 		return nil, err
 	}
+
 	user, err := i.TC.GetUser(shipmentRequest.UserID)
 	if err != nil {
 		return nil, err
 	}
+
 	roaster, err := i.TC.GetRoaster(shipmentRequest.RoasterID)
 	if err != nil {
 		return nil, err
 	}
+
 	dimensions, err := models.NewDimensions(shipmentRequest.Quantity, shipmentRequest.OzInBag, shipmentRequest.Length,
 		shipmentRequest.Width, shipmentRequest.Height, shipmentRequest.DistanceUnit, shipmentRequest.MassUnit)
 	if err != nil {
 		return nil, err
 	}
+
 	//TODO: insert token within config
-	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106" //os.Getenv("PRIVATE_TOKEN")
+	var privateToken = "shippo_test_c235414aacd89a1597122e88e28476c624b8f106"
 	c := shippo.NewClient(privateToken)
 
 	shipment, err := CreateShipment(c, user, roaster, dimensions)
@@ -139,8 +145,10 @@ func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*mode
 		return nil, err
 	}
 
-	order.SetLabelURL(transaction.LabelURL)
-	err = i.SetLabelURL(order.ID, transaction.LabelURL)
+	order.SetURL(transaction.LabelURL, transaction.TrackingURLProvider)
+	order.SetStatus(transaction.TrackingStatus.Status)
+	//insert urls into database
+	err = i.SetURL(order.ID, order.LabelURL, order.TrackingURL)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +201,7 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, trackingUrl=? WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
@@ -201,14 +209,15 @@ func (i *Order) Update(order *models.Order) error {
 		order.Quantity,
 		string(order.Status),
 		order.LabelURL,
+		order.TrackingURL,
 		order.ID.String(),
 	)
 
 	return err
 }
 
-func (i *Order) SetLabelURL(id uuid.UUID, labelURL string) error {
-	err := i.sql.Modify("UPDATE orderT SET labelURL=? WHERE id=?", labelURL, id.String())
+func (i *Order) SetURL(id uuid.UUID, labelURL string, trackingURL string) error {
+	err := i.sql.Modify("UPDATE orderT SET labelURL=?, trackingURL=? WHERE id=?", labelURL, trackingURL, id.String())
 	return err
 }
 
