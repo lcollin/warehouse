@@ -64,7 +64,6 @@ func CreateShipment(c *client.Client, user *tcm.User, roaster *tcm.Roaster, dime
 	if err != nil {
 		return nil, err
 	}
-
 	return shipment, nil
 }
 

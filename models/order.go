@@ -26,7 +26,7 @@ func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
 		SubscriptionID: subscriptionID,
 		RequestDate:    time.Now(),
 		Quantity:       quantity,
-		Status:         WAITING,
+		Status:         PENDING,
 	}
 }
 
@@ -43,6 +43,7 @@ func (o *Order) SetURL(labelURL string, trackingURL string) error {
 	return nil
 }
 
+/*Set status will set the order's status to the given status*/
 func (o *Order) SetStatus(status string) error {
 	s, ok := toOrderStatus(status)
 	if !ok {
@@ -61,7 +62,6 @@ func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		statusType, ok := toOrderStatus(status)
 		if !ok {
 			return nil, fmt.Errorf("Invalid Status")
@@ -75,20 +75,20 @@ func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 
 func toOrderStatus(s string) (OrderStatus, bool) {
 	switch s {
-	case WAITING:
-		return WAITING, true
-	case QUEUED:
-		return QUEUED, true
-	case SUCCESS:
-		return SUCCESS, true
-	case ERROR:
-		return ERROR, true
-	case REFUNDED:
-		return REFUNDED, true
-	case REFUNDPENDING:
-		return REFUNDPENDING, true
-	case REFUNDREJECTED:
-		return REFUNDREJECTED, true
+	case PENDING:
+		return PENDING, true
+	case MISSING:
+		return MISSING, true
+	case DELIVERED:
+		return DELIVERED, true
+	case SHIPPED:
+		return SHIPPED, true
+	case TRANSIT:
+		return TRANSIT, true
+	case FAILURE:
+		return FAILURE, true
+	case RETURNED:
+		return RETURNED, true
 	default:
 		return "", false
 	}
@@ -99,11 +99,11 @@ type OrderStatus string
 
 /*valid OrderStatus*/
 const (
-	WAITING        = "WAITING"
-	QUEUED         = "QUEUED"
-	SUCCESS        = "SUCCESS"
-	ERROR          = "ERROR"
-	REFUNDED       = "REFUNDED"
-	REFUNDPENDING  = "REFUNDPENDING"
-	REFUNDREJECTED = "REFUNDREJECTED"
+	PENDING   = "PENDING" //equivalent to shippo's UNKNOWN
+	MISSING   = "MISSING"
+	DELIVERED = "DELIVERED"
+	SHIPPED   = "SHIPPED"
+	TRANSIT   = "TRANSIT"
+	FAILURE   = "FAILURE"
+	RETURNED  = "RETURNED"
 )

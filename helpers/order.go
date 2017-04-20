@@ -46,7 +46,6 @@ func NewOrder(sql gateways.SQL, tc tcg.TownCenterI, b gateways.Bloodlines) *Orde
 }
 
 func (i *Order) GetByID(id string) (*models.Order, error) {
-	fmt.Printf("Id: %s\n", id)
 	rows, err := i.sql.Select(SELECT_ALL+" FROM orderT WHERE id=?", id)
 	if err != nil {
 		return nil, err
@@ -146,7 +145,8 @@ func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*mode
 	}
 
 	order.SetURL(transaction.LabelURL, transaction.TrackingURLProvider)
-	order.SetStatus(transaction.TrackingStatus.Status)
+	//order.SetStatus(transaction.TrackingStatus.Status) // On shippo test mode, shipment status is nil.
+
 	//insert urls into database
 	err = i.SetURL(order.ID, order.LabelURL, order.TrackingURL)
 	if err != nil {
