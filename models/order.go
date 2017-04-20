@@ -14,7 +14,7 @@ type Order struct {
 	RequestDate    time.Time   `json:"requestDate"`
 	ShipDate       time.Time   `json:"shipDate"`
 	Quantity       int         `json:"quantity"`
-	Status         OrderStatus `json"status"`
+	Status         OrderStatus `json:"status"`
 	LabelURL       string      `json:"labelUrl"`
 }
 
