@@ -17,6 +17,7 @@ type Order struct {
 	Status         OrderStatus `json:"status"`
 	LabelURL       string      `json:"labelUrl"`
 	TrackingURL    string      `json:"trackingUrl"`
+	TransactionID  string      `json:transactionId"`
 }
 
 func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
@@ -53,12 +54,20 @@ func (o *Order) SetStatus(status string) error {
 	return nil
 }
 
+func (o *Order) SetTransactionID(id string) error {
+	if id == "" {
+		return fmt.Errorf("Invalid transactionId")
+	}
+	o.TransactionID = id
+	return nil
+}
+
 func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	order := make([]*Order, 0)
 	for rows.Next() {
 		o := &Order{}
 		var status string
-		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL)
+		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL, &o.TransactionID)
 		if err != nil {
 			return nil, err
 		}

@@ -12,7 +12,7 @@ import (
 	"github.com/pborman/uuid"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, trackingUrl"
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, trackingUrl, transactionId"
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -25,7 +25,7 @@ type OrderI interface {
 	GetAll(int, int) ([]*models.Order, error)
 	Insert(*models.Order) error
 	Update(*models.Order) error
-	SetURL(uuid.UUID, string, string) error
+	SetTrackingInfo(uuid.UUID, string, string, string) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
 	GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
@@ -145,10 +145,11 @@ func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*mode
 	}
 
 	order.SetURL(transaction.LabelURL, transaction.TrackingURLProvider)
+	order.SetTransactionID(transaction.ObjectID)
 	//order.SetStatus(transaction.TrackingStatus.Status) // On shippo test mode, shipment status is nil.
 
 	//insert urls into database
-	err = i.SetURL(order.ID, order.LabelURL, order.TrackingURL)
+	err = i.SetTrackingInfo(order.ID, order.LabelURL, order.TrackingURL, order.TransactionID)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +202,7 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, trackingUrl=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, trackingUrl=?, transactionId=? WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
@@ -210,14 +211,15 @@ func (i *Order) Update(order *models.Order) error {
 		string(order.Status),
 		order.LabelURL,
 		order.TrackingURL,
+		order.TransactionID,
 		order.ID.String(),
 	)
 
 	return err
 }
 
-func (i *Order) SetURL(id uuid.UUID, labelURL string, trackingURL string) error {
-	err := i.sql.Modify("UPDATE orderT SET labelURL=?, trackingURL=? WHERE id=?", labelURL, trackingURL, id.String())
+func (i *Order) SetTrackingInfo(id uuid.UUID, labelURL string, trackingURL string, transactionID string) error {
+	err := i.sql.Modify("UPDATE orderT SET labelURL=?, trackingURL=?, transactionId=? WHERE id=?", labelURL, trackingURL, transactionID, id.String())
 	return err
 }
 
