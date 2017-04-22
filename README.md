@@ -277,7 +277,7 @@ Example:
 
 *Request:*
 ```
-POST localhost:8080/api/label
+POST localhost:8080/api/shipment
 {
 	"orderId":"025138a7-2231-11e7-a6a0-0242ac13000b",
 	"userId": "69c68317-f7d3-11e6-b525-0242ac13000b",
