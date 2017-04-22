@@ -13,33 +13,13 @@ type Order struct {
 	SubscriptionID uuid.UUID   `json:"subscriptionId"`
 	RequestDate    time.Time   `json:"requestDate"`
 	ShipDate       time.Time   `json:"shipDate"`
-	Quantity       int         `json:"quantity"`
-	Status         OrderStatus `json"status"`
+	Quantity       uint64      `json:"quantity"`
+	Status         OrderStatus `json:"status"`
 	LabelURL       string      `json:"labelUrl"`
+	TrackingURL    string      `json:"trackingUrl"`
 }
 
-/*ShipmentRequest represents the data needed to create a shipping label using Shippo API*/
-type ShipmentRequest struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"userID"`
-	RoasterID uuid.UUID `json:"roasterID"`
-	Quantity  float64   `json:"quantity"`
-	OzInBag   float64   `json:"ozInBag"`
-	Length    float64   `json:"length"`
-	Width     float64   `json:"width"`
-	Height    float64   `json:"height"`
-}
-
-/*Dimensions represent the data needed to get the correct sized shipment*/
-type Dimensions struct {
-	Quantity float64 `json:"quantity"`
-	OzInBag  float64 `json:"ozInBag"`
-	Length   float64 `json:"length"`
-	Width    float64 `json:"width"`
-	Height   float64 `json:"height"`
-}
-
-func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
+func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
 	return &Order{
 		ID:             uuid.NewUUID(),
 		UserID:         userID,
@@ -50,27 +30,41 @@ func NewOrder(userID, subscriptionID uuid.UUID, quantity int) *Order {
 	}
 }
 
-/*NewDimensions creates a new Dimensions struct with the specified size and weight*/
-func NewDimensions(quantity float64, ozInBag float64, length float64, width float64, height float64) *Dimensions {
-	return &Dimensions{
-		Quantity: quantity,
-		OzInBag:  ozInBag,
-		Length:   length,
-		Width:    width,
-		Height:   height,
+/*SetURL sets the label and tracking url for the specified order*/
+func (o *Order) SetURL(labelURL string, trackingURL string) error {
+	if labelURL == "" {
+		return fmt.Errorf("Invalid labelURL")
 	}
+	if trackingURL == "" {
+		return fmt.Errorf("Invalid trackingURL")
+	}
+	o.LabelURL = labelURL
+	o.TrackingURL = trackingURL
+	return nil
+}
+
+/*Set status will set the order's status to the given status*/
+func (o *Order) SetStatus(status string) error {
+	s, ok := toOrderStatus(status)
+	if !ok {
+		return fmt.Errorf("Invalid status")
+	}
+	o.Status = s
+	return nil
 }
 
 func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	order := make([]*Order, 0)
-
 	for rows.Next() {
 		o := &Order{}
 		var status string
-		rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL)
+		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL)
+		if err != nil {
+			return nil, err
+		}
 		statusType, ok := toOrderStatus(status)
 		if !ok {
-			return nil, fmt.Errorf("Invalid Error Status")
+			return nil, fmt.Errorf("Invalid Status")
 		}
 		o.Status = statusType
 		order = append(order, o)
@@ -83,12 +77,18 @@ func toOrderStatus(s string) (OrderStatus, bool) {
 	switch s {
 	case PENDING:
 		return PENDING, true
+	case MISSING:
+		return MISSING, true
+	case DELIVERED:
+		return DELIVERED, true
 	case SHIPPED:
 		return SHIPPED, true
-	case ARRIVED:
-		return ARRIVED, true
-	case FINISHED:
-		return FINISHED, true
+	case TRANSIT:
+		return TRANSIT, true
+	case FAILURE:
+		return FAILURE, true
+	case RETURNED:
+		return RETURNED, true
 	default:
 		return "", false
 	}
@@ -99,8 +99,11 @@ type OrderStatus string
 
 /*valid OrderStatus*/
 const (
-	PENDING  = "PENDING"
-	SHIPPED  = "SHIPPED"
-	ARRIVED  = "ARRIVED"
-	FINISHED = "FINISHED"
+	PENDING   = "PENDING" //equivalent to shippo's UNKNOWN
+	MISSING   = "MISSING"
+	DELIVERED = "DELIVERED"
+	SHIPPED   = "SHIPPED"
+	TRANSIT   = "TRANSIT"
+	FAILURE   = "FAILURE"
+	RETURNED  = "RETURNED"
 )

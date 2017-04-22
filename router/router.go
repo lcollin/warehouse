@@ -11,6 +11,7 @@ import (
 	tcg "github.com/jakelong95/TownCenter/gateways"
 	"github.com/lcollin/warehouse/handlers"
 	"github.com/lcollin/warehouse/workers"
+	cg "github.com/yuderekyu/covenant/gateways"
 
 	"gopkg.in/alexcesaro/statsd.v2"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -49,15 +50,22 @@ func New(config *config.Root) (*Inventory, error) {
 
 	s3 := g.NewS3(config.S3)
 	tc := tcg.NewTownCenter(config.TownCenter)
+	bloodlines := g.NewBloodlines(config.Bloodlines)
 	coinage := coinage.NewCoinage(config.Coinage)
+	covenant := cg.NewCovenant(config.Covenant)
 
 	ctx := &h.GatewayContext{
 		Sql:        sql,
 		Stats:      stats,
 		TownCenter: tc,
 		Coinage:    coinage,
+		Covenant:   covenant,
 		S3:         s3,
+<<<<<<< HEAD
 		Rabbit:     rabbit,
+=======
+		Bloodlines: bloodlines,
+>>>>>>> shippo
 	}
 
 	i := &Inventory{
@@ -87,8 +95,7 @@ func InitRouter(i *Inventory) {
 		item.PUT("/item/:itemID", i.item.Update)
 		item.DELETE("/item/:itemID", i.item.Delete)
 		item.POST("/item/:itemID/photo", i.item.Upload)
-
-		item.GET("/roaster/item/:roasterID", i.item.ViewByRoasterID)
+		item.GET("/roaster/item/:id", i.item.ViewByRoasterID)
 	}
 
 	order := i.router.Group("/api")
@@ -100,8 +107,10 @@ func InitRouter(i *Inventory) {
 		order.GET("/order/:orderID", i.order.View)
 		order.PUT("/order/:orderID", i.order.Update)
 		order.DELETE("/order/:orderID", i.order.Delete)
+		order.GET("/roaster/order/:id", i.order.ViewByRoasterID)
+		order.GET("/user/order/:id", i.order.ViewByUserID)
+		order.POST("/label", i.order.GetShipmentLabel)
 	}
-	i.router.POST("/label", i.order.GetShippingLabel)
 
 	suborder := i.router.Group("/api")
 	{

@@ -179,6 +179,8 @@ POST localhost:8080/api/order
 ```
 
 #### `GET /api/order?offset=0&limit=20` returns up to `limit` orders starting from `offset` when ordered by orderID
+#### `GET /api/roaster/order/:roasterId?offset=0&limit=20` returns up to `limit` orders starting from `offset` that belong to the roaster with the given id
+#### `GET /api/user/order/:userId?offset=0&limit=20` returns up to `limit` orders starting from `offset` that belong to the user with the given id
 
 Example:
 
@@ -277,11 +279,16 @@ Example:
 ```
 POST localhost:8080/api/label
 {
-  "ID": "9772d7ea-f15e-11e6-bad7-acbc32977aaf"       
-	"UserID": "dd82cc65-d79d-11e6-9d4c-0242ac120006"
-  "RoasterID": "5afc1d5c-f562-11e6-a55c-0242ac130009"
-	"Quantity": 2
-	"OzInBag": 7.5
+	"orderId":"025138a7-2231-11e7-a6a0-0242ac13000b",
+	"userId": "69c68317-f7d3-11e6-b525-0242ac13000b",
+	"roasterId": "247a0ba0-1c91-11e7-938e-0242ac13000a",
+	"quantity": 1,
+	"ozInBag": 5.5,
+	"length": 5,
+	"width": 5,
+	"height": 5,
+	"distanceUnit": "in",
+	"massUnit": "oz"
 }
 
 ```
@@ -289,7 +296,18 @@ POST localhost:8080/api/label
 *Response:*
 ```
 {
-
+  "data": {
+    "id": "025138a7-2231-11e7-a6a0-0242ac13000b",
+    "userId": "69c68317-f7d3-11e6-b525-0242ac13000b",
+    "subscriptionId": "ff6e2b6d-2230-11e7-b826-0242ac13000c",
+    "requestDate": "2017-04-18T06:41:09Z",
+    "shipDate": "0001-01-01T00:00:00Z",
+    "quantity": 10,
+    "status": "SHIPPED",
+    "labelUrl": "https://shippo-delivery-east.s3.amazonaws.com/29b9eed8ece744258d91eb944f817bf1.pdf?Signature=QWdjN7l2HSTIz7XAk%2BiZjboLA5s%3D&Expires=1524261228&AWSAccessKeyId=AKIAJGLCC5MYLLWIG42A",
+    "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction_input?origTrackNum=9270190164917307321057"
+  },
+  "success": true
 }
 ```
 
