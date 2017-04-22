@@ -28,7 +28,7 @@ type OrderI interface {
 	SetTrackingInfo(uuid.UUID, string, string, string) error
 	SetStatus(id uuid.UUID, status models.OrderStatus) error
 	Delete(string) error
-	GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
+	GetShipmentInfo(shipmentRequest *models.ShipmentRequest) (*models.Order, error)
 }
 
 type Order struct {
@@ -108,7 +108,7 @@ func (i *Order) getList(rows *sql.Rows) ([]*models.Order, error) {
 GetShipmentLabel retrieves the specified order, user, and roaster information,
 then creates a shippo shipment and transaction object and updates the order's labelURL
 */
-func (i *Order) GetShipmentLabel(shipmentRequest *models.ShipmentRequest) (*models.Order, error) {
+func (i *Order) GetShipmentInfo(shipmentRequest *models.ShipmentRequest) (*models.Order, error) {
 	order, err := i.GetByID(shipmentRequest.OrderID.String())
 	if err != nil {
 		return nil, err
