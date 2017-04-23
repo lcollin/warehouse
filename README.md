@@ -271,7 +271,7 @@ DELETE localhost:8080/api/order/9772d7ea-f15e-11e6-bad7-acbc32977aaf
   "success": true
 }
 ```
-#### `POST api/shipment` creates a shipping label for the specified order
+#### `POST api/order/:orderID/shipment` creates a shipping label for the specified order
 
 Example:
 
@@ -279,16 +279,10 @@ Example:
 ```
 POST localhost:8080/api/shipment
 {
-	"orderId":"025138a7-2231-11e7-a6a0-0242ac13000b",
-	"userId": "69c68317-f7d3-11e6-b525-0242ac13000b",
-	"roasterId": "247a0ba0-1c91-11e7-938e-0242ac13000a",
-	"quantity": 1,
-	"ozInBag": 5.5,
 	"length": 5,
 	"width": 5,
 	"height": 5,
-	"distanceUnit": "in",
-	"massUnit": "oz"
+	"distanceUnit": "in"
 }
 
 ```
