@@ -18,7 +18,7 @@ type OrderIfc interface {
 	View(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
-	GetShipmentLabel(ctx *gin.Context)
+	GetShipmentInfo(ctx *gin.Context)
 	ViewByUserID(ctx *gin.Context)
 	ViewByRoasterID(ctx *gin.Context)
 	Time() gin.HandlerFunc
@@ -35,7 +35,7 @@ func NewOrder(ctx *handlers.GatewayContext) OrderIfc {
 	stats := ctx.Stats.Clone(statsd.Prefix("api.order"))
 	return &Order{
 		BaseHandler: &handlers.BaseHandler{Stats: stats},
-		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter, ctx.Bloodlines),
+		Helper:      helpers.NewOrder(ctx.Sql, ctx.TownCenter, ctx.Bloodlines, ctx.Shippo),
 		Item:        helpers.NewItem(ctx.Sql, ctx.S3, ctx.Coinage, ctx.Covenant, ctx.Bloodlines, ctx.TownCenter),
 	}
 }
@@ -122,7 +122,9 @@ func (i *Order) View(ctx *gin.Context) {
 	i.Success(ctx, order)
 }
 
-func (i *Order) GetShipmentLabel(ctx *gin.Context) {
+func (i *Order) GetShipmentInfo(ctx *gin.Context) {
+	id := ctx.Param("orderID")
+
 	var json models.ShipmentRequest
 	err := ctx.BindJSON(&json)
 	if err != nil {
@@ -130,7 +132,19 @@ func (i *Order) GetShipmentLabel(ctx *gin.Context) {
 		return
 	}
 
-	order, err := i.Helper.GetShipmentLabel(&json)
+	order, err := i.Helper.GetByID(id)
+	if err != nil {
+		i.ServerError(ctx, err, nil)
+		return
+	}
+
+	item, err := i.Item.GetBySubscription(order.SubscriptionID)
+	if err != nil {
+		i.ServerError(ctx, err, nil)
+		return
+	}
+
+	order, err = i.Helper.GetShipmentInfo(order, item, &json)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
 		return

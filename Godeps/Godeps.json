@@ -143,23 +143,23 @@
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo",
-			"Comment": "v1.3.0-18-gb9188c5",
-			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
+			"Comment": "v1.3.0-19-g15bfef7",
+			"Rev": "15bfef7b9c98c42cbfbc60afb6b0e2a58a6bb94e"
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/client",
-			"Comment": "v1.3.0-18-gb9188c5",
-			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
+			"Comment": "v1.3.0-19-g15bfef7",
+			"Rev": "15bfef7b9c98c42cbfbc60afb6b0e2a58a6bb94e"
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/errors",
-			"Comment": "v1.3.0-18-gb9188c5",
-			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
+			"Comment": "v1.3.0-19-g15bfef7",
+			"Rev": "15bfef7b9c98c42cbfbc60afb6b0e2a58a6bb94e"
 		},
 		{
 			"ImportPath": "github.com/coldbrewcloud/go-shippo/models",
-			"Comment": "v1.3.0-18-gb9188c5",
-			"Rev": "b9188c5d0494608358d39305495b3639e14a6ec0"
+			"Comment": "v1.3.0-19-g15bfef7",
+			"Rev": "15bfef7b9c98c42cbfbc60afb6b0e2a58a6bb94e"
 		},
 		{
 			"ImportPath": "github.com/davecgh/go-spew/spew",
@@ -173,39 +173,39 @@
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/_mocks/gateways",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/config",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/gateways",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/gateways/sql",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/handlers",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/helpers",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/bloodlines/models",
-			"Rev": "9de3ef307001d52cc1b8fad3ad73e2366c3689b4"
+			"Rev": "0b3af796b621985432292aae38fbc41259ee8c92"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/coinage/gateways",
-			"Rev": "5a4d7021842d3a9759673d5b5f2308eced9583d3"
+			"Rev": "aa999d484c8d34009dbe8528e1ef8712629f5fbf"
 		},
 		{
 			"ImportPath": "github.com/ghmeier/coinage/models",
-			"Rev": "5a4d7021842d3a9759673d5b5f2308eced9583d3"
+			"Rev": "aa999d484c8d34009dbe8528e1ef8712629f5fbf"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin/binding",
@@ -233,11 +233,11 @@
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/gateways",
-			"Rev": "a4dddd6ea4162d889e537e531c118ff3c0efbce1"
+			"Rev": "31aa6b03d3f9f6eb93a66a283050ce1b15db6312"
 		},
 		{
 			"ImportPath": "github.com/jakelong95/TownCenter/models",
-			"Rev": "a4dddd6ea4162d889e537e531c118ff3c0efbce1"
+			"Rev": "31aa6b03d3f9f6eb93a66a283050ce1b15db6312"
 		},
 		{
 			"ImportPath": "github.com/jarcoal/httpmock",
@@ -492,11 +492,11 @@
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/gateways",
-			"Rev": "2b8c6076b372f55bbc68f1814c465220c040c941"
+			"Rev": "c300414464d1de1b0c43b6db8b5cac5215f40f8d"
 		},
 		{
 			"ImportPath": "github.com/yuderekyu/covenant/models",
-			"Rev": "2b8c6076b372f55bbc68f1814c465220c040c941"
+			"Rev": "c300414464d1de1b0c43b6db8b5cac5215f40f8d"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

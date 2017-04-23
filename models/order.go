@@ -17,6 +17,7 @@ type Order struct {
 	Status         OrderStatus `json:"status"`
 	LabelURL       string      `json:"labelUrl"`
 	TrackingURL    string      `json:"trackingUrl"`
+	TransactionID  string      `json:transactionId"`
 }
 
 func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
@@ -28,19 +29,6 @@ func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
 		Quantity:       quantity,
 		Status:         PENDING,
 	}
-}
-
-/*SetURL sets the label and tracking url for the specified order*/
-func (o *Order) SetURL(labelURL string, trackingURL string) error {
-	if labelURL == "" {
-		return fmt.Errorf("Invalid labelURL")
-	}
-	if trackingURL == "" {
-		return fmt.Errorf("Invalid trackingURL")
-	}
-	o.LabelURL = labelURL
-	o.TrackingURL = trackingURL
-	return nil
 }
 
 /*Set status will set the order's status to the given status*/
@@ -58,7 +46,7 @@ func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	for rows.Next() {
 		o := &Order{}
 		var status string
-		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL)
+		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL, &o.TransactionID)
 		if err != nil {
 			return nil, err
 		}

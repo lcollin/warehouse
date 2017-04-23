@@ -2,21 +2,14 @@ package models
 
 import (
 	"errors"
-	"github.com/pborman/uuid"
 )
 
 /*ShipmentRequest represents the data needed to create a shipping label using Shippo API*/
 type ShipmentRequest struct {
-	OrderID      uuid.UUID `json:"orderId"`
-	UserID       uuid.UUID `json:"userId"`
-	RoasterID    uuid.UUID `json:"roasterId"`
-	Quantity     uint64    `json:"quantity"`
-	OzInBag      float64   `json:"ozInBag"`
-	Length       float64   `json:"length"`
-	Width        float64   `json:"width"`
-	Height       float64   `json:"height"`
-	DistanceUnit string    `json:"distanceUnit"`
-	MassUnit     string    `json:"massUnit"`
+	Length       float64 `json:"length"`
+	Width        float64 `json:"width"`
+	Height       float64 `json:"height"`
+	DistanceUnit string  `json:"distanceUnit"`
 }
 
 /*Dimensions represent the data needed to get the correct sized shipment*/
@@ -31,21 +24,21 @@ type Dimensions struct {
 }
 
 /*NewDimensions creates a new Dimensions struct with the specified size and weight*/
-func NewDimensions(quantity uint64, ozInBag float64, length float64, width float64, height float64, distanceUnit string, massUnit string) (*Dimensions, error) {
-	dUnit, ok := toDistanceUnit(distanceUnit)
+func NewDimensions(quantity uint64, ozInBag float64, req *ShipmentRequest) (*Dimensions, error) {
+	dUnit, ok := toDistanceUnit(req.DistanceUnit)
 	if !ok {
 		return nil, errors.New("Invalid distance unit")
 	}
-	mUnit, ok := toMassUnit(massUnit)
+	mUnit, ok := toMassUnit("oz")
 	if !ok {
 		return nil, errors.New("Invalid mass unit")
 	}
 	return &Dimensions{
 		Quantity:     quantity,
 		OzInBag:      ozInBag,
-		Length:       length,
-		Width:        width,
-		Height:       height,
+		Length:       req.Length,
+		Width:        req.Width,
+		Height:       req.Height,
 		DistanceUnit: string(dUnit),
 		MassUnit:     string(mUnit),
 	}, nil
