@@ -14,7 +14,7 @@ import (
 	"github.com/lcollin/warehouse/models"
 )
 
-const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, trackingUrl, transactionId"
+const SELECT_ALL = "SELECT id, userID, subscriptionID, requestDate, shipDate, quantity, status, labelUrl, trackingUrl, transactionId, itemId"
 
 type baseHelper struct {
 	sql gateways.SQL
@@ -95,7 +95,7 @@ func (i *Order) GetByTransactionID(id string) (*models.Order, error) {
 
 func (i *Order) GetByRoasterID(id uuid.UUID, offset, limit int) ([]*models.Order, error) {
 	rows, err := i.sql.Select(
-		"SELECT o.id, o.userID, o.subscriptionID, o.requestDate, o.shipDate, o.quantity, o.status, o.labelUrl, o.trackingUrl, o.transactionId FROM orderT o "+
+		"SELECT o.id, o.userID, o.subscriptionID, o.requestDate, o.shipDate, o.quantity, o.status, o.labelUrl, o.trackingUrl, o.transactionId, o.itemId FROM orderT o "+
 			"INNER JOIN covenant.subscription as s ON s.id=o.subscriptionId AND s.roasterId=? "+
 			"ORDER BY o.status ASC, id ASC LIMIT ?,?",
 		id.String(),
@@ -172,7 +172,7 @@ func (i *Order) GetShipmentInfo(order *models.Order, item *models.Item, req *mod
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status) VALUE (?,?,?,?,?,?,?)",
+		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status, itemId) VALUE (?,?,?,?,?,?,?)",
 		order.ID,
 		order.UserID,
 		order.SubscriptionID,
@@ -180,6 +180,7 @@ func (i *Order) Insert(order *models.Order) error {
 		order.ShipDate,
 		order.Quantity,
 		string(order.Status),
+		order.ItemID,
 	)
 
 	if err != nil {
@@ -215,7 +216,7 @@ func (i *Order) Insert(order *models.Order) error {
 
 func (i *Order) Update(order *models.Order) error {
 	err := i.sql.Modify(
-		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, trackingUrl=?, transactionId=? WHERE id=?",
+		"UPDATE orderT SET userID=?, subscriptionID=?, requestDate=?, shipDate=?, quantity=?, status=?, labelUrl=?, trackingUrl=?, transactionId=?, itemId=? WHERE id=?",
 		order.UserID,
 		order.SubscriptionID,
 		order.RequestDate,
@@ -225,6 +226,7 @@ func (i *Order) Update(order *models.Order) error {
 		order.LabelURL,
 		order.TrackingURL,
 		order.TransactionID,
+		order.ItemID,
 		order.ID.String(),
 	)
 

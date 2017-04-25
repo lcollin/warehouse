@@ -17,14 +17,16 @@ type Order struct {
 	Status         OrderStatus `json:"status"`
 	LabelURL       string      `json:"labelUrl"`
 	TrackingURL    string      `json:"trackingUrl"`
-	TransactionID  string      `json:transactionId"`
+	TransactionID  string      `json:"transactionId"`
+	ItemID         uuid.UUID   `json:"itemId"`
 }
 
-func NewOrder(userID, subscriptionID uuid.UUID, quantity uint64) *Order {
+func NewOrder(userID, subscriptionID, itemID uuid.UUID, quantity uint64) *Order {
 	return &Order{
 		ID:             uuid.NewUUID(),
 		UserID:         userID,
 		SubscriptionID: subscriptionID,
+		ItemID:         itemID,
 		RequestDate:    time.Now(),
 		Quantity:       quantity,
 		Status:         PENDING,
@@ -46,7 +48,7 @@ func OrderFromSQL(rows *sql.Rows) ([]*Order, error) {
 	for rows.Next() {
 		o := &Order{}
 		var status string
-		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL, &o.TransactionID)
+		err := rows.Scan(&o.ID, &o.UserID, &o.SubscriptionID, &o.RequestDate, &o.ShipDate, &o.Quantity, &status, &o.LabelURL, &o.TrackingURL, &o.TransactionID, &o.ItemID)
 		if err != nil {
 			return nil, err
 		}

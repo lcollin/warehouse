@@ -62,7 +62,7 @@ func (o *Order) New(ctx *gin.Context) {
 		fmt.Println(err.Error())
 	}
 
-	order := models.NewOrder(json.UserID, json.SubscriptionID, json.Quantity)
+	order := models.NewOrder(json.UserID, json.SubscriptionID, item.ID, json.Quantity)
 	err = o.Helper.Insert(order)
 	if err != nil {
 		o.ServerError(ctx, err, json)
@@ -138,7 +138,7 @@ func (i *Order) GetShipmentInfo(ctx *gin.Context) {
 		return
 	}
 
-	item, err := i.Item.GetBySubscription(order.SubscriptionID)
+	item, err := i.Item.GetByID(order.ItemID.String()) //GetBySubscription(order.SubscriptionID)
 	if err != nil {
 		i.ServerError(ctx, err, nil)
 		return
