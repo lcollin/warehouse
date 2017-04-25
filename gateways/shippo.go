@@ -109,7 +109,6 @@ func (s *ship) CreateAddress(name, street, city, state, zip, country, phone, ema
 
 /*PurchaseShippingLabel creates a transaction object*/
 func (s *ship) PurchaseShippingLabel(shipment *shipm.Shipment) (*shipm.Transaction, error) {
-	fmt.Println(shipment.Rates, shipment.CarrierAccounts)
 	transactionInput := &shipm.TransactionInput{
 		Rate:          shipment.Rates[0].ObjectID, //TODO: pick the cheapest option for Rate and pick file
 		LabelFileType: shipm.LabelFileTypePDF,     //TODO: offer option of which file type?

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/pborman/uuid"
 
@@ -146,7 +147,6 @@ func (i *Order) GetShipmentInfo(order *models.Order, item *models.Item, req *mod
 		return nil, err
 	}
 
-	fmt.Println(user, roaster, dimensions)
 	shipment, err := i.S.CreateShipment(user, roaster, dimensions)
 	if err != nil {
 		return nil, err
@@ -160,6 +160,8 @@ func (i *Order) GetShipmentInfo(order *models.Order, item *models.Item, req *mod
 	order.LabelURL = transaction.LabelURL
 	order.TrackingURL = transaction.TrackingURLProvider
 	order.TransactionID = transaction.ObjectID
+	order.ShipDate = time.Now()
+	order.SetStatus("TRANSIT")
 
 	//insert urls into database
 	err = i.Update(order)
