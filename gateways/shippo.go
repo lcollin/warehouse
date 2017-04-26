@@ -81,6 +81,7 @@ func (s *ship) CreateShipment(user *tcm.User, roaster *tcm.Roaster, dimensions *
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("Shipment Rates: %+s\n", shipment.Rates)
 	return shipment, nil
 }
 
@@ -100,8 +101,13 @@ func (s *ship) CreateAddress(name, street, city, state, zip, country, phone, ema
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("Address: %+s", address)
 	if !address.ValidationResults.IsValid {
-		return nil, fmt.Errorf("Invalid address: %s", address.ValidationResults.Messages[0].Text)
+		if len(address.ValidationResults.Messages) > 0 {
+			return nil, fmt.Errorf("Invalid address: %s", address.ValidationResults.Messages[0].Text)
+		} else {
+			return nil, fmt.Errorf("Invalid Address")
+		}
 	}
 
 	return address, nil
