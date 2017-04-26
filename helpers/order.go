@@ -174,7 +174,7 @@ func (i *Order) GetShipmentInfo(order *models.Order, item *models.Item, req *mod
 
 func (i *Order) Insert(order *models.Order) error {
 	err := i.sql.Modify(
-		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status, itemId) VALUE (?,?,?,?,?,?,?)",
+		"INSERT INTO orderT (id, userID, subscriptionID, requestDate, shipDate, quantity, status, itemId) VALUE (?,?,?,?,?,?,?,?)",
 		order.ID,
 		order.UserID,
 		order.SubscriptionID,
