@@ -16,6 +16,7 @@ type Shippo interface {
 	CreateShipment(*tcm.User, *tcm.Roaster, *models.Dimensions) (*shipm.Shipment, error)
 	PurchaseShippingLabel(*shipm.Shipment) (*shipm.Transaction, error)
 	CreateAddress(string, string, string, string, string, string, string, string) (*shipm.Address, error)
+	GetRate(shipment *shipm.Shipment) (*shipm.Rate, error)
 }
 
 type ship struct {
@@ -81,8 +82,21 @@ func (s *ship) CreateShipment(user *tcm.User, roaster *tcm.Roaster, dimensions *
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Shipment Rates: %+s\n", shipment.Rates)
+
 	return shipment, nil
+}
+
+func (s *ship) GetRate(shipment *shipm.Shipment) (*shipm.Rate, error) {
+	rates := shipment.Rates
+	if len(rates) > 0 {
+		return rates[0], nil
+	}
+
+	e := "Error: no rates available"
+	if len(shipment.Messages) > 0 {
+		e = shipment.Messages[0].Text
+	}
+	return nil, fmt.Errorf(e)
 }
 
 func (s *ship) CreateAddress(name, street, city, state, zip, country, phone, email string) (*shipm.Address, error) {
@@ -113,9 +127,14 @@ func (s *ship) CreateAddress(name, street, city, state, zip, country, phone, ema
 
 /*PurchaseShippingLabel creates a transaction object*/
 func (s *ship) PurchaseShippingLabel(shipment *shipm.Shipment) (*shipm.Transaction, error) {
+	rate, err := s.GetRate(shipment)
+	if err != nil {
+		return nil, err
+	}
+
 	transactionInput := &shipm.TransactionInput{
-		Rate:          shipment.Rates[0].ObjectID, //TODO: pick the cheapest option for Rate and pick file
-		LabelFileType: shipm.LabelFileTypePDF,     //TODO: offer option of which file type?
+		Rate:          rate.ObjectID,
+		LabelFileType: shipm.LabelFileTypePDF, //TODO: offer option of which file type?
 		Async:         false,
 	}
 	transaction, err := s.c.PurchaseShippingLabel(transactionInput)
